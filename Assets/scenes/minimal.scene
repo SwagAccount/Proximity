@@ -176,7 +176,7 @@
       "Components": [
         {
           "__type": "Sandbox.PlayerController",
-          "__guid": "e970018a-1431-4504-9659-6cc26932e60c",
+          "__guid": "1a2dd1db-e85c-4186-8900-23fdaf37af19",
           "AccelerationTime": 0,
           "AimStrengthBody": 1,
           "AimStrengthEyes": 1,
@@ -185,7 +185,7 @@
           "AltMoveButton": "run",
           "Body": {
             "_type": "component",
-            "component_id": "92ec6817-ab3c-4987-a823-0ad4f2533d96",
+            "component_id": "ceed2feb-4c5f-4572-bdb2-b48f9a8dac72",
             "go": "8a5f8119-cb9d-4aa7-8d6d-ed6f18b1a1ef",
             "component_type": "Rigidbody"
           },
@@ -197,7 +197,7 @@
           "CameraOffset": "256,0,12",
           "ColliderObject": {
             "_type": "gameobject",
-            "go": "7ed836b1-8734-4e05-bdfe-ef1876e6fc83"
+            "go": "c294830d-d35f-4e93-beeb-023997b2755b"
           },
           "DeaccelerationTime": 0,
           "DuckedHeight": 36,
@@ -206,10 +206,10 @@
           "EnablePressing": true,
           "EyeDistanceFromTop": 8,
           "FootstepMixer": {
-            "Name": "unknown",
-            "Id": "00000000-0000-0000-0000-000000000000"
+            "Name": "master",
+            "Id": "69e4d064-2d75-46b2-bbd9-0148beeb87ab"
           },
-          "FootstepVolume": 1,
+          "FootstepVolume": 5,
           "HideBodyInFirstPerson": true,
           "JumpSpeed": 300,
           "LookSensitivity": 1,
@@ -243,33 +243,6 @@
           "UseInputControls": true,
           "UseLookControls": true,
           "WalkSpeed": 110
-        },
-        {
-          "__type": "Sandbox.Rigidbody",
-          "__guid": "92ec6817-ab3c-4987-a823-0ad4f2533d96",
-          "AngularDamping": 1,
-          "Gravity": true,
-          "LinearDamping": 0.1,
-          "Locking": {
-            "X": false,
-            "Y": false,
-            "Z": false,
-            "Pitch": true,
-            "Yaw": true,
-            "Roll": true
-          },
-          "MassCenterOverride": "0,0,36",
-          "MassOverride": 500,
-          "MotionEnabled": true,
-          "OnComponentDestroy": null,
-          "OnComponentDisabled": null,
-          "OnComponentEnabled": null,
-          "OnComponentFixedUpdate": null,
-          "OnComponentStart": null,
-          "OnComponentUpdate": null,
-          "OverrideMassCenter": true,
-          "RigidbodyFlags": "DisableCollisionSounds",
-          "StartAsleep": false
         },
         {
           "__type": "Sandbox.Movement.MoveModeWalk",
@@ -311,16 +284,44 @@
           "Speed": 1
         },
         {
-          "__type": "PhysicsGrab",
+          "__type": "Proximity.PhysicsGrab",
           "__guid": "22228b8f-1d89-4430-b4e1-b8acef1881d9",
-          "GrabRange": 0,
-          "MovementSmoothness": 3,
+          "GrabAngularDamping": 0,
+          "GrabLinearDamping": 0,
+          "MinMaxDistance": "32 128",
           "OnComponentDestroy": null,
           "OnComponentDisabled": null,
           "OnComponentEnabled": null,
           "OnComponentFixedUpdate": null,
           "OnComponentStart": null,
           "OnComponentUpdate": null
+        },
+        {
+          "__type": "Sandbox.Rigidbody",
+          "__guid": "ceed2feb-4c5f-4572-bdb2-b48f9a8dac72",
+          "AngularDamping": 1,
+          "Gravity": false,
+          "LinearDamping": 10,
+          "Locking": {
+            "X": false,
+            "Y": false,
+            "Z": false,
+            "Pitch": true,
+            "Yaw": true,
+            "Roll": true
+          },
+          "MassCenterOverride": "0,0,0",
+          "MassOverride": 500,
+          "MotionEnabled": true,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "OverrideMassCenter": true,
+          "RigidbodyFlags": "DisableCollisionSounds",
+          "StartAsleep": false
         }
       ],
       "Children": [
@@ -372,14 +373,14 @@
           ]
         },
         {
-          "__guid": "7ed836b1-8734-4e05-bdfe-ef1876e6fc83",
+          "__guid": "c294830d-d35f-4e93-beeb-023997b2755b",
           "Flags": 1,
           "Name": "Colliders",
           "Enabled": true,
           "Components": [
             {
               "__type": "Sandbox.CapsuleCollider",
-              "__guid": "ae3ef0c3-b45d-4dd7-9aa4-6df83a0e8914",
+              "__guid": "97acaa04-d972-4fe1-ae93-8640129495db",
               "End": "0,0,45.05097",
               "Friction": 0,
               "IsTrigger": false,
@@ -401,9 +402,9 @@
             },
             {
               "__type": "Sandbox.BoxCollider",
-              "__guid": "24caecd5-4a18-4a34-b3df-09ab1725da16",
+              "__guid": "77791ede-4b6a-479a-a2f1-15e6bc812ad1",
               "Center": "0,0,18",
-              "Friction": 0,
+              "Friction": 81,
               "IsTrigger": false,
               "OnComponentDestroy": null,
               "OnComponentDisabled": null,
@@ -610,7 +611,7 @@
             ],
             "MaterialIndex": [
               0,
-              0,
+              1,
               0,
               0,
               0,
@@ -643,7 +644,8 @@
               0
             ],
             "Materials": [
-              "materials/dev/reflectivity_30.vmat"
+              "materials/dev/reflectivity_30.vmat",
+              "materials/generic/floor_tile_marble.vmat"
             ]
           },
           "OnComponentDestroy": null,
@@ -691,6 +693,42 @@
           "Tint": "1,1,1,1"
         }
       ]
+    },
+    {
+      "__guid": "21a0b52e-11d3-4459-8f21-84cdb008f39d",
+      "Flags": 0,
+      "Name": "DSP",
+      "Position": "0,0,128",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.DspVolume",
+          "__guid": "e0528b27-29c7-44ee-8de9-35e9b5a5e056",
+          "Dsp": "metallic.large",
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "Priority": 0,
+          "SceneVolume": {
+            "Type": "Box",
+            "Sphere": {
+              "Center": "0,0,0",
+              "Radius": 10
+            },
+            "Box": {
+              "Mins": "-128,-768,-128",
+              "Maxs": "128,768,128"
+            }
+          },
+          "TargetMixer": {
+            "Name": "master",
+            "Id": "69e4d064-2d75-46b2-bbd9-0148beeb87ab"
+          }
+        }
+      ]
     }
   ],
   "SceneProperties": {
@@ -722,6 +760,7 @@
   "Title": "minimal",
   "Description": null,
   "__references": [
+    "facepunch.floor_tile_marble#85415",
     "facepunch.microwave#83558"
   ],
   "__version": 2

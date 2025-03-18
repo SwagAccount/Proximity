@@ -1,90 +1,43 @@
 using Sandbox;
 using System;
+using Sandbox.Physics;
+using SpringJoint = Sandbox.SpringJoint;
 
+namespace Proximity;
 public class PhysicsGrab : Component
 {
-	[Property] float GrabRange { get; set; }
-
-	/// <summary>
-	/// The higher this is, the "looser" the grip is when dragging objects
-	/// </summary>
-	[Property, Range( 1, 16 )] public float MovementSmoothness { get; set; } = 3.0f;
-
-	PhysicsBody grabbedBody;
-	Transform grabbedOffset;
-	Vector3 localOffset;
-	bool waitForUp = false;
-
+	[Property] RangedFloat MinMaxDistance { get; set; } = new( 64, 128 );
+	[Property] float GrabLinearDamping { get; set; } = 25;
+	[Property] float GrabAngularDamping { get; set; } = 50;
+	
+	public SceneTraceResult Tr { get; set; }
+	Sandbox.Physics.FixedJoint GrabJoint { get; set; }
+	PhysicsBody HeldBody { get; set; }
+	PhysicsBody GrabBody { get; set; }
+	Rotation InitialRotation { get; set; }
+	float InitialLinearDamping { get; set; }
+	float InitialAngularDamping { get; set; }
+	float GrabDistance { get; set; }
+	
+	protected override void OnStart()
+	{
+		GrabBody = new PhysicsBody( Scene.PhysicsWorld );
+	}
+	
 	protected override void OnUpdate()
 	{
 		if ( IsProxy )
 			return;
 
-		Transform aimTransform = Scene.Camera.WorldTransform;
-
-		if ( waitForUp )
-		{
-			return;
-		}
-
-		if ( grabbedBody.IsValid() )
-		{
-			if ( Input.Down( "attack2" ) )
-			{
-				grabbedBody.MotionEnabled = false;
-				grabbedBody.Velocity = 0;
-				grabbedBody.AngularVelocity = 0;
-
-				grabbedOffset = default;
-				grabbedBody = default;
-				waitForUp = true;
-				return;
-			}
-
-			var targetTx = aimTransform.ToWorld( grabbedOffset );
-
-			var worldStart = grabbedBody.GetLerpedTransform( Time.Now ).PointToWorld( localOffset );
-			var worldEnd = targetTx.PointToWorld( localOffset );
-
-			//var delta = Scene.Camera.WorldTransform.PointToWorld( new Vector3( 0, -10, -5 ) ) - worldStart;
-			var delta = worldEnd - worldStart;
-			for ( var f = 0.0f; f < delta.Length; f += 2.0f )
-			{
-				var size = 1 - f * 0.01f;
-				if ( size < 0 ) break;
-
-				Gizmo.Draw.Color = Color.Cyan;
-				Gizmo.Draw.SolidSphere( worldStart + delta.Normal * f, size );
-			}
-
-			if ( !Input.Down( "attack1" ) )
-			{
-				grabbedOffset = default;
-				grabbedBody = default;
-			}
-			else
-			{
-				return;
-			}
-		}
-
-		var tr = Scene.Trace.Ray( Scene.Camera.WorldPosition, Scene.Camera.WorldPosition + Scene.Camera.WorldRotation.Forward * 1000 )
+		GrabDistance += Input.MouseWheel.y * 5;
+		GrabDistance = GrabDistance.Clamp( MinMaxDistance.Min, MinMaxDistance.Max );
+		
+		Tr = Scene.Trace.Ray( Scene.Camera.ScreenNormalToRay( 0.5f ), HeldBody.IsValid() ? GrabDistance : MinMaxDistance.Max )
 			.IgnoreGameObjectHierarchy( GameObject.Root )
 			.Run();
-
-		if ( !tr.Hit || tr.Body is null )
-			return;
-
-		if ( tr.Body.BodyType == PhysicsBodyType.Static )
-			return;
-
-		if ( Input.Down( "attack1" ) )
-		{
-			grabbedBody = tr.Body;
-			localOffset = tr.Body.Transform.PointToLocal( tr.HitPosition );
-			grabbedOffset = aimTransform.ToLocal( tr.Body.Transform );
-			grabbedBody.MotionEnabled = true;
-		}
+		
+		if ( Input.Pressed( "attack1" ) && !HeldBody.IsValid() ) Pickup();
+		if ( Input.Released( "attack1" ) && HeldBody.IsValid() ) Drop();
 	}
 
 	protected override void OnFixedUpdate()
@@ -92,45 +45,53 @@ public class PhysicsGrab : Component
 		if ( IsProxy )
 			return;
 
-		Transform aimTransform = Scene.Camera.WorldTransform;
+		if ( !HeldBody.IsValid() ) return;
+		
+		GrabBody.Position = Tr.StartPosition + Tr.Direction * (HeldBody.IsValid() ? GrabDistance : MinMaxDistance.Max);
+	}
+	
+	public void Pickup()
+	{
+		if ( !Tr.Hit || Tr.Body is null || Tr.Body.BodyType == PhysicsBodyType.Static ) return;
 
-		if ( waitForUp )
-		{
-			if ( Input.Down( "attack1" ) || Input.Down( "attack2" ) )
-			{
-				return;
-			}
-		}
+		HeldBody = Tr.Body;
+		GrabDistance = (Tr.HitPosition - Scene.Camera.WorldPosition).Length;
 
-		waitForUp = false;
+		var localOffset = HeldBody.Transform.PointToLocal( Tr.HitPosition );
+		
+		GrabJoint?.Remove();
+		GrabJoint = PhysicsJoint.CreateFixed( new PhysicsPoint( GrabBody ), new PhysicsPoint( HeldBody ) );
+		GrabJoint.Point1 = new PhysicsPoint( GrabBody );
+		GrabJoint.Point2 = new PhysicsPoint( HeldBody, localOffset );
+		
+		var maxForce = 20 * Tr.Body.Mass * Scene.PhysicsWorld.Gravity.Length;
+		GrabJoint.SpringLinear = new PhysicsSpring( 15, 1, maxForce );
 
-		if ( grabbedBody.IsValid() )
-		{
-			if ( Input.Down( "attack1" ) )
-			{
-				var targetTx = aimTransform.ToWorld( grabbedOffset );
-				grabbedBody.SmoothMove( targetTx, 0.02f * MovementSmoothness, Time.Delta );
-				return;
-			}
-		}
+		InitialRotation = HeldBody.Rotation;
+		InitialAngularDamping = HeldBody.AngularDamping; //Keep track of angular damping value before pickup
+		InitialLinearDamping = HeldBody.LinearDamping;
+		HeldBody.AngularDamping = GrabAngularDamping;
+		HeldBody.LinearDamping = GrabLinearDamping;
 	}
 
+	public void Drop()
+	{
+		HeldBody.AngularDamping = InitialAngularDamping; //Reset angular damping
+		HeldBody.LinearDamping = InitialLinearDamping;
+		
+		GrabJoint?.Remove();
+		GrabJoint = null;
+		HeldBody = null;
+	}
+	
 	protected override void OnPreRender()
 	{
 		base.OnPreRender();
-
-
-		if ( grabbedBody is null )
+		
+		if ( Tr.Hit && HeldBody is null && Tr.Body.BodyType != PhysicsBodyType.Static )
 		{
-			var tr = Scene.Trace.Ray( Scene.Camera.ScreenNormalToRay( 0.5f ), 1000.0f )
-							.IgnoreGameObjectHierarchy( GameObject.Root )
-							.Run();
-
-			if ( tr.Hit )
-			{
-				Gizmo.Draw.Color = Color.Cyan;
-				Gizmo.Draw.SolidSphere( tr.HitPosition, 1 );
-			}
+			Gizmo.Draw.Color = Color.Cyan;
+			Gizmo.Draw.SolidSphere( Tr.HitPosition, 1 );
 		}
 	}
 }
