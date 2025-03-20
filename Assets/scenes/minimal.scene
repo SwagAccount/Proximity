@@ -27,42 +27,6 @@
       ]
     },
     {
-      "__guid": "00344a8c-fa5e-45ae-b12a-10bb781a1dc3",
-      "Flags": 0,
-      "Name": "2D Skybox",
-      "Position": "0,0,128",
-      "Tags": "skybox",
-      "Enabled": true,
-      "Components": [
-        {
-          "__type": "Sandbox.EnvmapProbe",
-          "__guid": "f3e304db-baab-4c1a-a4ec-8442585c2d62",
-          "Bounds": {
-            "Mins": "-4096,-4096,-4096",
-            "Maxs": "4096,4096,4096"
-          },
-          "DelayBetweenUpdates": 0.1,
-          "Feathering": 0.02,
-          "FrameInterval": 5,
-          "MaxDistance": 512,
-          "MultiBounce": true,
-          "OnComponentDestroy": null,
-          "OnComponentDisabled": null,
-          "OnComponentEnabled": null,
-          "OnComponentFixedUpdate": null,
-          "OnComponentStart": null,
-          "OnComponentUpdate": null,
-          "Projection": "Sphere",
-          "RenderDynamically": true,
-          "Texture": "textures/cubemaps/default2.vtex",
-          "TintColor": "1,1,1,1",
-          "UpdateStrategy": "OnEnabled",
-          "ZFar": 4096,
-          "ZNear": 16
-        }
-      ]
-    },
-    {
       "__guid": "3ee1c9f4-07be-4e0b-8b23-67bee2d8ec8a",
       "Flags": 0,
       "Name": "Camera",
@@ -71,7 +35,7 @@
         {
           "__type": "Sandbox.CameraComponent",
           "__guid": "cf3cbf96-22b6-4be4-a5d0-672a96c17f9f",
-          "BackgroundColor": "0.33333,0.46275,0.52157,1",
+          "BackgroundColor": "0,0,0,1",
           "ClearFlags": "All",
           "FieldOfView": 60,
           "FovAxis": "Horizontal",
@@ -90,41 +54,13 @@
           "TargetEye": "None",
           "Viewport": "0,0,1,1",
           "ZFar": 10000,
-          "ZNear": 5
+          "ZNear": 1
         },
         {
           "__type": "Sandbox.Bloom",
           "__guid": "d73ef723-c888-41d4-802e-f797c79318be",
-          "BloomColor": {
-            "blend": "Linear",
-            "color": [
-              {
-                "t": 0,
-                "c": "1,1,1,1"
-              },
-              {
-                "t": 1,
-                "c": "1,1,1,1"
-              }
-            ],
-            "alpha": []
-          },
-          "BloomCurve": [
-            {
-              "x": 0,
-              "y": 0.5,
-              "in": 0,
-              "out": 0,
-              "mode": "Mirrored"
-            },
-            {
-              "x": 1,
-              "y": 1,
-              "in": 0,
-              "out": 0,
-              "mode": "Mirrored"
-            }
-          ],
+          "__version": 1,
+          "Gamma": 2.2,
           "Mode": "Additive",
           "OnComponentDestroy": null,
           "OnComponentDisabled": null,
@@ -133,8 +69,8 @@
           "OnComponentStart": null,
           "OnComponentUpdate": null,
           "Strength": 0.5,
-          "Threshold": 0.5,
-          "ThresholdWidth": 0.5
+          "Threshold": 1.25,
+          "Tint": "1,1,1,1"
         },
         {
           "__type": "Sandbox.Tonemapping",
@@ -172,6 +108,7 @@
       "__guid": "8a5f8119-cb9d-4aa7-8d6d-ed6f18b1a1ef",
       "Flags": 0,
       "Name": "Player",
+      "Rotation": "0,0,0.7071067,0.7071068",
       "Enabled": true,
       "Components": [
         {
@@ -202,7 +139,7 @@
           "DeaccelerationTime": 0,
           "DuckedHeight": 36,
           "DuckedSpeed": 70,
-          "EnableFootstepSounds": true,
+          "EnableFootstepSounds": false,
           "EnablePressing": true,
           "EyeDistanceFromTop": 8,
           "FootstepMixer": {
@@ -239,7 +176,7 @@
           "UseAnimatorControls": true,
           "UseButton": "Attack1",
           "UseCameraControls": true,
-          "UseFovFromPreferences": true,
+          "UseFovFromPreferences": false,
           "UseInputControls": true,
           "UseLookControls": true,
           "WalkSpeed": 110
@@ -300,8 +237,8 @@
           "__type": "Sandbox.Rigidbody",
           "__guid": "ceed2feb-4c5f-4572-bdb2-b48f9a8dac72",
           "AngularDamping": 1,
-          "Gravity": false,
-          "LinearDamping": 10,
+          "Gravity": true,
+          "LinearDamping": 0.1,
           "Locking": {
             "X": false,
             "Y": false,
@@ -310,7 +247,7 @@
             "Yaw": true,
             "Roll": true
           },
-          "MassCenterOverride": "0,0,0",
+          "MassCenterOverride": "0,0,36",
           "MassOverride": 500,
           "MotionEnabled": true,
           "OnComponentDestroy": null,
@@ -322,6 +259,27 @@
           "OverrideMassCenter": true,
           "RigidbodyFlags": "DisableCollisionSounds",
           "StartAsleep": false
+        },
+        {
+          "__type": "ProximityPlayer",
+          "__guid": "2ce59c07-1df9-49c9-8a51-a22260e09c57",
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null
+        },
+        {
+          "__type": "Footsteps",
+          "__guid": "0dc2195b-e8e1-4bd0-b9d4-2129a668b1ca",
+          "Concrete": "sounds/footsteps.sound",
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null
         }
       ],
       "Children": [
@@ -404,7 +362,7 @@
               "__type": "Sandbox.BoxCollider",
               "__guid": "77791ede-4b6a-479a-a2f1-15e6bc812ad1",
               "Center": "0,0,18",
-              "Friction": 81,
+              "Friction": 0,
               "IsTrigger": false,
               "OnComponentDestroy": null,
               "OnComponentDisabled": null,
@@ -426,243 +384,344 @@
       ]
     },
     {
-      "__guid": "20894561-b5d2-4d24-9d31-f5b821c69b4d",
+      "__guid": "03a681a5-161c-4ad8-8951-f28c11371297",
       "Flags": 0,
-      "Name": "Lights",
+      "Name": "Map",
       "Enabled": true,
       "Children": [
         {
-          "__guid": "70ffdce9-c02f-4b47-82b4-3e069dd3525c",
+          "__guid": "21a0b52e-11d3-4459-8f21-84cdb008f39d",
           "Flags": 0,
-          "Name": "Spot Light",
-          "Position": "0,0,256",
-          "Rotation": "0,0.7071068,0,0.7071068",
-          "Tags": "light_spot,light",
+          "Name": "DSP",
+          "Position": "0,0,128",
           "Enabled": true,
           "Components": [
             {
-              "__type": "Sandbox.SpotLight",
-              "__guid": "d4ed9a2a-82ea-4b4d-87b3-efd9b80472ba",
-              "Attenuation": 1,
-              "ConeInner": 15,
-              "ConeOuter": 72,
-              "Cookie": null,
-              "FogMode": "Enabled",
-              "FogStrength": 1,
-              "LightColor": "0.91373,0.98039,1,1",
+              "__type": "Sandbox.DspVolume",
+              "__guid": "e0528b27-29c7-44ee-8de9-35e9b5a5e056",
+              "Dsp": "metallic.large",
               "OnComponentDestroy": null,
               "OnComponentDisabled": null,
               "OnComponentEnabled": null,
               "OnComponentFixedUpdate": null,
               "OnComponentStart": null,
               "OnComponentUpdate": null,
-              "Radius": 500,
-              "Shadows": true
+              "Priority": 0,
+              "SceneVolume": {
+                "Type": "Box",
+                "Sphere": {
+                  "Center": "0,0,0",
+                  "Radius": 10
+                },
+                "Box": {
+                  "Mins": "-128,-768,-128",
+                  "Maxs": "128,768,128"
+                }
+              },
+              "TargetMixer": {
+                "Name": "master",
+                "Id": "69e4d064-2d75-46b2-bbd9-0148beeb87ab"
+              }
             }
           ]
         },
         {
-          "__guid": "370906d6-80da-4153-9cab-c39223c53f7a",
+          "__guid": "0adc7ed7-f50b-4123-a300-865323b4fd69",
           "Flags": 0,
-          "Name": "Spot Light (2)",
-          "Position": "0,512,256",
-          "Rotation": "0,0.7071068,0,0.7071068",
-          "Tags": "light_spot,light",
+          "Name": "Box",
           "Enabled": true,
           "Components": [
             {
-              "__type": "Sandbox.SpotLight",
-              "__guid": "fac11042-ee35-4029-9fe0-01ed35242f98",
-              "Attenuation": 1,
-              "ConeInner": 15,
-              "ConeOuter": 72,
-              "Cookie": null,
-              "FogMode": "Enabled",
-              "FogStrength": 1,
-              "LightColor": "0.91373,0.98039,1,1",
+              "__type": "Sandbox.MeshComponent",
+              "__guid": "44859be3-4f2c-445a-9487-8b5d6c300704",
+              "Collision": "Mesh",
+              "Color": "1,1,1,1",
+              "Friction": null,
+              "HideInGame": false,
+              "IsTrigger": false,
+              "Mesh": {
+                "Topology": "H4sIAAAAAAAACk2QBw4CQQwD5wpw9F7+/1I0wpaItNqs48TOLsAHWAMDMAErYANsgT1wBM78Ygi3ufFMT/sbY84r+BieN8Fm4J57iq55Q61LeuZ4OkXLWQvwTs23fsXqcwc8Mtu3u4hZV+sAXP92dk8x685U6xZ963LldAe91Ysa7iKvfu3Vs7k8/0pe/ehNT/Z73MUd+l/+nbj98utHXK7zvkr62NDEAQAA",
+                "Position": "0,0,0",
+                "Rotation": "0,0,0,1",
+                "Positions": [
+                  "-128,-768,256",
+                  "128,-768,256",
+                  "128,768,256",
+                  "-128,768,256",
+                  "-128,768,0",
+                  "128,768,0",
+                  "128,-768,0",
+                  "-128,-768,0"
+                ],
+                "TextureCoord": [
+                  "-1,6",
+                  "0,0",
+                  "1,6",
+                  "0,0",
+                  "1,-6",
+                  "0,0",
+                  "-1,-6",
+                  "0,0",
+                  "-1,-6",
+                  "2,1",
+                  "1,-6",
+                  "12,1",
+                  "1,6",
+                  "2,1",
+                  "-1,6",
+                  "12,1",
+                  "0,1",
+                  "2,0",
+                  "12,0",
+                  "0,1",
+                  "12,0",
+                  "0,1",
+                  "0,1",
+                  "2,0"
+                ],
+                "TextureUAxis": [
+                  "1,0,-0",
+                  "1,0,0",
+                  "0,1,0",
+                  "0,-1,0",
+                  "1,0,0",
+                  "-1,0,0"
+                ],
+                "TextureVAxis": [
+                  "0,-1,0",
+                  "0,-1,0",
+                  "0,0,-1",
+                  "0,0,-1",
+                  "0,0,-1",
+                  "0,0,-1"
+                ],
+                "TextureScale": [
+                  "0.25,0.25",
+                  "0.25,0.25",
+                  "0.25,0.5",
+                  "0.25,0.5",
+                  "0.25,0.5",
+                  "0.25,0.5"
+                ],
+                "TextureOffset": [
+                  "0,0",
+                  "0,0",
+                  "3072,512",
+                  "3072,512",
+                  "512,512",
+                  "512,512"
+                ],
+                "MaterialIndex": [
+                  3,
+                  1,
+                  2,
+                  2,
+                  2,
+                  2
+                ],
+                "EdgeFlags": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "Materials": [
+                  "materials/dev/reflectivity_30.vmat",
+                  "materials/generic/floor_tile_marble.vmat",
+                  "materials/concrete/wall/bare/concrete_wall_bare_02.vmat",
+                  "materials/plaster/ceiling/ceiling_plaster_01.vmat"
+                ]
+              },
               "OnComponentDestroy": null,
               "OnComponentDisabled": null,
               "OnComponentEnabled": null,
               "OnComponentFixedUpdate": null,
               "OnComponentStart": null,
               "OnComponentUpdate": null,
-              "Radius": 500,
-              "Shadows": true
+              "OnObjectTriggerEnter": null,
+              "OnObjectTriggerExit": null,
+              "OnTriggerEnter": null,
+              "OnTriggerExit": null,
+              "RenderType": "On",
+              "SmoothingAngle": 40,
+              "Static": true,
+              "Surface": null,
+              "SurfaceVelocity": "0,0,0"
             }
           ]
         },
         {
-          "__guid": "4059cfef-3976-4c5c-9be1-7ef03bedc0f4",
+          "__guid": "6f40a6cc-0465-4b89-909b-73fdf8c26030",
           "Flags": 0,
-          "Name": "Spot Light (1)",
-          "Position": "0,-512,256",
-          "Rotation": "0,0.7071068,0,0.7071068",
-          "Tags": "light_spot,light",
+          "Name": "Ambient Light",
           "Enabled": true,
           "Components": [
             {
-              "__type": "Sandbox.SpotLight",
-              "__guid": "ccbb2a00-d459-434b-b341-511014ce0687",
-              "Attenuation": 1,
-              "ConeInner": 15,
-              "ConeOuter": 72,
-              "Cookie": null,
-              "FogMode": "Enabled",
-              "FogStrength": 1,
-              "LightColor": "0.91373,0.98039,1,1",
+              "__type": "Sandbox.AmbientLight",
+              "__guid": "254a7902-5c50-4514-b676-296f2a23baa1",
+              "Color": "0.00392,0.00392,0.00392,1",
+              "OnComponentDestroy": null,
+              "OnComponentDisabled": null,
+              "OnComponentEnabled": null,
+              "OnComponentFixedUpdate": null,
+              "OnComponentStart": null,
+              "OnComponentUpdate": null
+            }
+          ]
+        },
+        {
+          "__guid": "00344a8c-fa5e-45ae-b12a-10bb781a1dc3",
+          "Flags": 0,
+          "Name": "Envmap Probe",
+          "Position": "0,0,128",
+          "Tags": "skybox",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "Sandbox.EnvmapProbe",
+              "__guid": "f3e304db-baab-4c1a-a4ec-8442585c2d62",
+              "Bounds": {
+                "Mins": "-512,-1024,-256",
+                "Maxs": "512,1024,512"
+              },
+              "DelayBetweenUpdates": 0.1,
+              "Feathering": 0.02,
+              "FrameInterval": 5,
+              "MaxDistance": 512,
+              "MultiBounce": true,
               "OnComponentDestroy": null,
               "OnComponentDisabled": null,
               "OnComponentEnabled": null,
               "OnComponentFixedUpdate": null,
               "OnComponentStart": null,
               "OnComponentUpdate": null,
-              "Radius": 500,
-              "Shadows": true
+              "Projection": "Sphere",
+              "RenderDynamically": true,
+              "Texture": "textures/cubemaps/default2.vtex",
+              "TintColor": "1,1,1,1",
+              "UpdateStrategy": "OnEnabled",
+              "ZFar": 4096,
+              "ZNear": 16
             }
           ]
-        }
-      ]
-    },
-    {
-      "__guid": "0adc7ed7-f50b-4123-a300-865323b4fd69",
-      "Flags": 0,
-      "Name": "Box",
-      "Enabled": true,
-      "Components": [
+        },
         {
-          "__type": "Sandbox.MeshComponent",
-          "__guid": "44859be3-4f2c-445a-9487-8b5d6c300704",
-          "Collision": "Mesh",
-          "Color": "1,1,1,1",
-          "Friction": null,
-          "HideInGame": false,
-          "IsTrigger": false,
-          "Mesh": {
-            "Topology": "H4sIAAAAAAAACk2QBw4CQQwD5wpw9F7+/1I0wpaItNqs48TOLsAHWAMDMAErYANsgT1wBM78Ygi3ufFMT/sbY84r+BieN8Fm4J57iq55Q61LeuZ4OkXLWQvwTs23fsXqcwc8Mtu3u4hZV+sAXP92dk8x685U6xZ963LldAe91Ysa7iKvfu3Vs7k8/0pe/ehNT/Z73MUd+l/+nbj98utHXK7zvkr62NDEAQAA",
-            "Position": "0,0,0",
-            "Rotation": "0,0,0,1",
-            "Positions": [
-              "-128,-768,256",
-              "128,-768,256",
-              "128,768,256",
-              "-128,768,256",
-              "-128,768,0",
-              "128,768,0",
-              "128,-768,0",
-              "-128,-768,0"
-            ],
-            "TextureCoord": [
-              "-1,6",
-              "1,-2",
-              "1,6",
-              "6,-2",
-              "1,-6",
-              "1,-2",
-              "-1,-6",
-              "6,-2",
-              "-1,-6",
-              "-1,0",
-              "1,-6",
-              "-6,0",
-              "1,6",
-              "-1,0",
-              "-1,6",
-              "-6,0",
-              "6,0",
-              "-1,-2",
-              "-6,-2",
-              "1,0",
-              "-6,-2",
-              "1,0",
-              "6,0",
-              "-1,-2"
-            ],
-            "TextureUAxis": [
-              "1,0,-0",
-              "1,0,0",
-              "0,-1,0",
-              "0,1,-0",
-              "-1,-0,0",
-              "1,-0,0"
-            ],
-            "TextureVAxis": [
-              "0,-1,0",
-              "0,-1,0",
-              "-0,0,-1",
-              "-0,-0,-1",
-              "0,0,-1",
-              "-0,0,-1"
-            ],
-            "TextureScale": [
-              "0.25,0.25",
-              "0.25,0.25",
-              "0.25,0.25",
-              "0.25,0.25",
-              "0.25,0.25",
-              "0.25,0.25"
-            ],
-            "TextureOffset": [
-              "0,0",
-              "0,0",
-              "0,0",
-              "0,0",
-              "0,0",
-              "0,0"
-            ],
-            "MaterialIndex": [
-              0,
-              1,
-              0,
-              0,
-              0,
-              0
-            ],
-            "EdgeFlags": [
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0
-            ],
-            "Materials": [
-              "materials/dev/reflectivity_30.vmat",
-              "materials/generic/floor_tile_marble.vmat"
-            ]
-          },
-          "OnComponentDestroy": null,
-          "OnComponentDisabled": null,
-          "OnComponentEnabled": null,
-          "OnComponentFixedUpdate": null,
-          "OnComponentStart": null,
-          "OnComponentUpdate": null,
-          "OnObjectTriggerEnter": null,
-          "OnObjectTriggerExit": null,
-          "OnTriggerEnter": null,
-          "OnTriggerExit": null,
-          "RenderType": "On",
-          "SmoothingAngle": 40,
-          "Static": true,
-          "Surface": null,
-          "SurfaceVelocity": "0,0,0"
+          "__guid": "20894561-b5d2-4d24-9d31-f5b821c69b4d",
+          "Flags": 0,
+          "Name": "Lights",
+          "Enabled": true,
+          "Children": [
+            {
+              "__guid": "70ffdce9-c02f-4b47-82b4-3e069dd3525c",
+              "Flags": 0,
+              "Name": "Spot Light",
+              "Position": "0,0,256",
+              "Rotation": "0,0.7071068,0,0.7071068",
+              "Tags": "light_spot,light",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.SpotLight",
+                  "__guid": "d4ed9a2a-82ea-4b4d-87b3-efd9b80472ba",
+                  "Attenuation": 1,
+                  "ConeInner": 50,
+                  "ConeOuter": 72,
+                  "Cookie": null,
+                  "FogMode": "Enabled",
+                  "FogStrength": 1,
+                  "LightColor": "0.91373,0.98039,1,1",
+                  "OnComponentDestroy": null,
+                  "OnComponentDisabled": null,
+                  "OnComponentEnabled": null,
+                  "OnComponentFixedUpdate": null,
+                  "OnComponentStart": null,
+                  "OnComponentUpdate": null,
+                  "Radius": 1024,
+                  "Shadows": true
+                }
+              ]
+            },
+            {
+              "__guid": "370906d6-80da-4153-9cab-c39223c53f7a",
+              "Flags": 0,
+              "Name": "Spot Light (2)",
+              "Position": "0,512,256",
+              "Rotation": "0,0.7071068,0,0.7071068",
+              "Tags": "light_spot,light",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.SpotLight",
+                  "__guid": "fac11042-ee35-4029-9fe0-01ed35242f98",
+                  "Attenuation": 1,
+                  "ConeInner": 50,
+                  "ConeOuter": 72,
+                  "Cookie": null,
+                  "FogMode": "Enabled",
+                  "FogStrength": 1,
+                  "LightColor": "0.91373,0.98039,1,1",
+                  "OnComponentDestroy": null,
+                  "OnComponentDisabled": null,
+                  "OnComponentEnabled": null,
+                  "OnComponentFixedUpdate": null,
+                  "OnComponentStart": null,
+                  "OnComponentUpdate": null,
+                  "Radius": 1024,
+                  "Shadows": true
+                }
+              ]
+            },
+            {
+              "__guid": "4059cfef-3976-4c5c-9be1-7ef03bedc0f4",
+              "Flags": 0,
+              "Name": "Spot Light (1)",
+              "Position": "0,-512,256",
+              "Rotation": "0,0.7071068,0,0.7071068",
+              "Tags": "light_spot,light",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.SpotLight",
+                  "__guid": "ccbb2a00-d459-434b-b341-511014ce0687",
+                  "Attenuation": 1,
+                  "ConeInner": 50,
+                  "ConeOuter": 72,
+                  "Cookie": null,
+                  "FogMode": "Enabled",
+                  "FogStrength": 1,
+                  "LightColor": "0.91373,0.98039,1,1",
+                  "OnComponentDestroy": null,
+                  "OnComponentDisabled": null,
+                  "OnComponentEnabled": null,
+                  "OnComponentFixedUpdate": null,
+                  "OnComponentStart": null,
+                  "OnComponentUpdate": null,
+                  "Radius": 1024,
+                  "Shadows": true
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -674,12 +733,12 @@
       "Enabled": true,
       "Components": [
         {
-          "__type": "Sandbox.Prop",
-          "__guid": "38049edb-58c3-47e9-abd7-0e46f239d140",
+          "__type": "Sandbox.ModelRenderer",
+          "__guid": "4044181a-5f7e-40f5-a5d4-82f1c73f46bc",
           "BodyGroups": 18446744073709551615,
-          "Health": 0,
-          "IsStatic": false,
+          "CreateAttachments": false,
           "MaterialGroup": null,
+          "MaterialOverride": null,
           "Model": "models/props/microwave/microwave.vmdl",
           "OnComponentDestroy": null,
           "OnComponentDisabled": null,
@@ -687,46 +746,61 @@
           "OnComponentFixedUpdate": null,
           "OnComponentStart": null,
           "OnComponentUpdate": null,
-          "OnPropBreak": null,
-          "OnPropTakeDamage": null,
-          "StartAsleep": false,
+          "RenderOptions": {
+            "GameLayer": true,
+            "OverlayLayer": false,
+            "BloomLayer": false,
+            "AfterUILayer": false
+          },
+          "RenderType": "On",
           "Tint": "1,1,1,1"
-        }
-      ]
-    },
-    {
-      "__guid": "21a0b52e-11d3-4459-8f21-84cdb008f39d",
-      "Flags": 0,
-      "Name": "DSP",
-      "Position": "0,0,128",
-      "Enabled": true,
-      "Components": [
+        },
         {
-          "__type": "Sandbox.DspVolume",
-          "__guid": "e0528b27-29c7-44ee-8de9-35e9b5a5e056",
-          "Dsp": "metallic.large",
+          "__type": "Sandbox.ModelCollider",
+          "__guid": "ebb18b22-d9b6-4f3c-948a-35602d99231c",
+          "Friction": null,
+          "IsTrigger": false,
+          "Model": "models/props/microwave/microwave.vmdl",
           "OnComponentDestroy": null,
           "OnComponentDisabled": null,
           "OnComponentEnabled": null,
           "OnComponentFixedUpdate": null,
           "OnComponentStart": null,
           "OnComponentUpdate": null,
-          "Priority": 0,
-          "SceneVolume": {
-            "Type": "Box",
-            "Sphere": {
-              "Center": "0,0,0",
-              "Radius": 10
-            },
-            "Box": {
-              "Mins": "-128,-768,-128",
-              "Maxs": "128,768,128"
-            }
+          "OnObjectTriggerEnter": null,
+          "OnObjectTriggerExit": null,
+          "OnTriggerEnter": null,
+          "OnTriggerExit": null,
+          "Static": false,
+          "Surface": null,
+          "SurfaceVelocity": "0,0,0"
+        },
+        {
+          "__type": "Sandbox.Rigidbody",
+          "__guid": "4b8986fb-bc74-4b07-a76d-00379afd5fb6",
+          "AngularDamping": 0,
+          "Gravity": true,
+          "LinearDamping": 0,
+          "Locking": {
+            "X": false,
+            "Y": false,
+            "Z": false,
+            "Pitch": false,
+            "Yaw": false,
+            "Roll": false
           },
-          "TargetMixer": {
-            "Name": "master",
-            "Id": "69e4d064-2d75-46b2-bbd9-0148beeb87ab"
-          }
+          "MassCenterOverride": "0,0,0",
+          "MassOverride": 0,
+          "MotionEnabled": true,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "OverrideMassCenter": false,
+          "RigidbodyFlags": 0,
+          "StartAsleep": false
         }
       ]
     }
@@ -760,6 +834,8 @@
   "Title": "minimal",
   "Description": null,
   "__references": [
+    "facepunch.ceiling_plaster_01#33577",
+    "facepunch.concrete_wall_bare_02#47059",
     "facepunch.floor_tile_marble#85415",
     "facepunch.microwave#83558"
   ],

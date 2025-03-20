@@ -36,8 +36,8 @@ public class PhysicsGrab : Component
 			.IgnoreGameObjectHierarchy( GameObject.Root )
 			.Run();
 		
-		if ( Input.Pressed( "attack1" ) && !HeldBody.IsValid() ) Pickup();
-		if ( Input.Released( "attack1" ) && HeldBody.IsValid() ) Drop();
+		if ( Input.Down( "attack1" ) && !HeldBody.IsValid() ) Pickup();
+		if ( !Input.Down( "attack1" ) && HeldBody.IsValid() ) Drop();
 	}
 
 	protected override void OnFixedUpdate()
