@@ -19,7 +19,7 @@ public sealed class Footsteps : Component, PlayerController.IEvents
 	
 	public void PlayFootstepSound( SceneModel.FootstepEvent step )
 	{
-		if ( TimeSinceStep < 0.2f || !player.IsOnGround ) return;
+		if ( TimeSinceStep < 0.2f || !player.IsOnGround || player.Velocity.IsNearZeroLength ) return;
 		TimeSinceStep = 0;
 		
 		var snd = Sound.Play( Concrete );

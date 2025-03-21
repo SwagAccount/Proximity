@@ -5,7 +5,7 @@ public sealed class ProximityPlayer : Component
 	[RequireComponent] PlayerController player { get; set; }
 	protected override void OnStart()
 	{
-		
+		player.Renderer.RenderType = ModelRenderer.ShadowRenderType.ShadowsOnly;
 	}
 	
 	protected override void OnFixedUpdate()
