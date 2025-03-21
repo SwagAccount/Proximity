@@ -1,0 +1,658 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>package.shy.cineshaders</name>
+    </assembly>
+    <members>
+        <member name="T:CCSAnalogNoise">
+            <summary>
+            Generate random noise (not very good).
+            </summary>
+        </member>
+        <member name="P:CCSAnalogNoise.fOpacity">
+            <summary>
+            noise-image belnd, please note: the fine tune controls effect the entire image
+            </summary>
+        </member>
+        <member name="P:CCSAnalogNoise.bAspect">
+            <summary>
+            Makes the noise less stretched out.
+            </summary>
+        </member>
+        <member name="P:CCSAnalogNoise.bRadius">
+            <summary>
+            How much to blur the image + noise
+            </summary>
+        </member>
+        <member name="P:CCSAnalogNoise.Blacks">
+            <summary>
+            Darkest parts of the image. cool value: -0.25
+            </summary>
+        </member>
+        <member name="P:CCSAnalogNoise.Shadows">
+            <summary>
+            Rolloff from midtones to shadow. cool value: 0.0
+            </summary>
+        </member>
+        <member name="P:CCSAnalogNoise.Midtones">
+            <summary>
+            Parts of the image around 50%. cool value: 0.05
+            </summary>
+        </member>
+        <member name="P:CCSAnalogNoise.Highlights">
+            <summary>
+            Rolloff from midtones to whites.  cool value: 0.365
+            </summary>
+        </member>
+        <member name="P:CCSAnalogNoise.Whites">
+            <summary>
+            Brightest parts of the image. cool value: 1.35
+            </summary>
+        </member>
+        <member name="T:CCSAnamorphicFlares">
+            <summary>
+            Streaks of light across the screen, horizontal and or vertical.
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.bContrast">
+            <summary>
+            Adjusts the threshold of where flares are applied.
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.fCutoff">
+            <summary>
+            Allows you to somewhat reduce the amount of flares produced. (input is not clampled)
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.fPower">
+            <summary>
+            Brightness and quality of the flares.
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.fStretch">
+            <summary>
+            How wide the horizontal flares are.
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.fVStretch">
+            <summary>
+            How tall the vertical flares are.
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.fShape">
+            <summary>
+            Sort of like brightness + falloff on the edges.
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.fVShape">
+            <summary>
+            Sort of like brightness + falloff on the edges.
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.fGain">
+            <summary>
+            How much to fade the flares with the rest of the scene
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.fColor">
+            <summary>
+            Color to tint the flares.
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.fVertON">
+            <summary>
+            Enable Vertical flares.
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.fHoriON">
+            <summary>
+            Enable Horizontal flares.
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.fDoubleAdd">
+            <summary>
+            Doubles the brightness of the whole image. I had this on while writing the shader so I now I think it looks good. 
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.bFineTune">
+            <summary>
+            curves adjustments for the prepass
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.fBypass">
+            <summary>
+            Disables the flares and shows you the prepass, makes it easier to fine tune the effect. 
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.bRadius">
+            <summary>
+            Adjust the amount of blur on the pre pass (default 10)
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.Blacks">
+            <summary>
+            Darkest parts of the image.
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.Shadows">
+            <summary>
+            Rolloff from midtones to shadow.
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.Midtones">
+            <summary>
+            Parts of the image around 50%.
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.Highlights">
+            <summary>
+            Rolloff from midtones to whites.
+            </summary>
+        </member>
+        <member name="P:CCSAnamorphicFlares.Whites">
+            <summary>
+            Brightest parts of the image.
+            </summary>
+        </member>
+        <member name="T:CCSBoxBlur">
+            <summary>
+            Box-Blur filter with various options, looks OK, not very performant.
+            </summary>
+        </member>
+        <member name="P:CCSBoxBlur.bRadius">
+            <summary>
+            size of the box used to blur the image
+            </summary>
+        </member>
+        <member name="P:CCSBoxBlur.bMulti">
+            <summary>
+            Use this to make the blur larger, but lower quality
+            </summary>
+        </member>
+        <member name="P:CCSBoxBlur.bAspect">
+            <summary>
+            Will actually make the blur a perfect square instead of it stretching to your screen's aspect ratio.
+            </summary>
+        </member>
+        <member name="P:CCSBoxBlur.bCircle">
+            <summary>
+            The blur will be generated using a circle instead of a box.
+            </summary>
+        </member>
+        <member name="T:CCSCRT">
+            <summary>
+            Emulate the look of a CRT screen
+            </summary>
+        </member>
+        <member name="P:CCSCRT.CRTPresetSelection">
+            <summary>
+            Pattern to use for the CRT Mask.
+            </summary>
+        </member>
+        <member name="P:CCSCRT.bLevel">
+            <summary>
+            Blur the image slightly to create a "bloomy" look (works best with white enhance).
+            </summary>
+        </member>
+        <member name="P:CCSCRT.Flicker">
+            <summary>
+            FLASHING LIGHTS WARNING! Enables Screen Flicker (defaults are sane).
+            </summary>	
+        </member>
+        <member name="P:CCSCRT.fOpacity">
+            <summary>
+            How much to flash, 1 = fully black(crazy). 0.02 = semi realistic.
+            </summary>
+        </member>
+        <member name="P:CCSCRT.fRate">
+            <summary>
+            How often the screen flickers. Gets weird at high values.
+            </summary>
+        </member>
+        <member name="P:CCSCRT.ScanLines">
+            <summary>
+            Enable CRT Scan line emulation.
+            </summary>	
+        </member>
+        <member name="P:CCSCRT.slCount">
+            <summary>
+            Not the actual number of lines on the screen, but a value which scales the number of lines.
+            </summary>
+        </member>
+        <member name="P:CCSCRT.slOpacity">
+            <summary>
+            How dark the scanlines are.
+            </summary>
+        </member>
+        <member name="P:CCSCRT.slScroll">
+            <summary>
+            Rate at which to scroll the scanlines up or down the screen. high speed + opacity = FLASHING LIGHTS!
+            </summary>
+        </member>
+        <member name="P:CCSCRT.rWhite">
+            <summary>
+            brings back some brighter colors, but some of the crt effect is lost.
+            </summary>	
+        </member>
+        <member name="P:CCSCRT.fPriority">
+            <summary>
+            Ensures the effect is applied AFTER others in the stack.(you must disable and re-enable the component for the change to take place), in this case the CRT shader will become the lowest, meaning even letterboxing will be applied BEFORE this one.
+            </summary>
+        </member>
+        <member name="T:CCSColorCorrection">
+            <summary>
+            Uses the same "Neutral" LUT type as OBS, low quality but good for FX
+            </summary>
+        </member>
+        <member name="F:CCSColorCorrection.lut_texture">
+            <summary>
+            Make sure you set it to RGBA8888 not DXT for best quality.
+            </summary>
+        </member>
+        <member name="P:CCSColorCorrection.fOpacity">
+            <summary>
+            Blend the corrected image with the original.
+            </summary>
+        </member>
+        <member name="T:CCSColorKey">
+            <summary>
+            Key out a color from the image or an image or apply an image on top of the screen.
+            </summary>
+        </member>
+        <member name="P:CCSColorKey.keyColor">
+            <summary>
+            Color to key out.
+            </summary>
+        </member>
+        <member name="F:CCSColorKey.image_texture">
+            <summary>
+            vTex_C to use for the image to be keyed.
+            </summary>
+        </member>
+        <member name="P:CCSColorKey.bBlend">
+            <summary>
+            Somewhat control the the color tolerance. Does NOT play well with tonemapping etc...
+            </summary>
+        </member>
+        <member name="P:CCSColorKey.fBlend">
+            <summary>
+            Somewhat control the the color tolerance. Set both of these pretty close to each other for best results.
+            </summary>
+        </member>
+        <member name="P:CCSColorKey.bOpacity">
+            <summary>
+            Adjusts the opacity of the area which is keyed out.
+            </summary>
+        </member>
+        <member name="P:CCSColorKey.fOpacity">
+            <summary>
+            Adjusts the opacity of the main image.
+            </summary>
+        </member>
+        <member name="P:CCSColorKey.xScale">
+            <summary>
+            Horizontal scale of the image.
+            </summary>
+        </member>
+        <member name="P:CCSColorKey.yScale">
+            <summary>
+            Vertical scale of the image.
+            </summary>
+        </member>
+        <member name="P:CCSColorKey.xPos">
+            <summary>
+            Horizontal image position offset from center.
+            </summary>
+        </member>
+        <member name="P:CCSColorKey.yPos">
+            <summary>
+            Vertical image position offset from center.
+            </summary>
+        </member>
+        <member name="P:CCSColorKey.kSwap">
+            <summary>
+            Instead of applying the key to the game with the image under it, apply the key to the image and have the game under it.
+            </summary>
+        </member>
+        <member name="P:CCSColorKey.iTile">
+            <summary>
+            Allow the image texture to repeat. 
+            </summary>
+        </member>
+        <member name="P:CCSColorKey.dKey">
+            <summary>
+            Don't color key at all, just overlay.
+            </summary>
+        </member>
+        <member name="P:CCSColorKey.BlendModeSelection">
+            <summary>
+            Blend mode, works strangely in Overlay Mode!
+            </summary>
+        </member>
+        <member name="T:CCSJpeg">
+            <summary>
+            Do I look like I know what a JAY-PEG is? (not fully working)
+            </summary>
+        </member>
+        <member name="P:CCSJpeg.levels">
+            <summary>
+            JPEG Compression level. Lower = worse. 
+            </summary>
+        </member>
+        <member name="P:CCSJpeg.freq">
+            <summary>
+            Changes the number of reconstruction steps, higher = more weird. 
+            </summary>
+        </member>
+        <member name="P:CCSJpeg.bypass">
+            <summary>
+            Display the quanitized DCT, which is some weird math thing that looks kinda cool.
+            </summary>
+        </member>
+        <member name="T:CCSJGlitch_bad">
+            <summary>
+            Make everything look horrid (VERY FLASHY COLORS!)
+            </summary>
+        </member>
+        <member name="P:CCSJGlitch_bad.levels">
+            <summary>
+            Higher = more messed up.
+            </summary>
+        </member>
+        <member name="P:CCSJGlitch_bad.freq">
+            <summary>
+            Sorta zooms in on the image. 
+            </summary>
+        </member>
+        <member name="T:CCSLensDistortion">
+            <summary>
+            Realistic Camera Lens Distortion.
+            </summary>
+        </member>
+        <member name="P:CCSLensDistortion.dBarrel">
+            <summary>
+            Amount of Barrel (outward bending) Lens Distortion 
+            </summary>
+        </member>
+        <member name="P:CCSLensDistortion.dPin">
+            <summary>
+             Amount of Pincushion (inward bending) Lens Distortion 
+            </summary>
+        </member>
+        <member name="P:CCSLensDistortion.CropIn">
+            <summary>
+            Zoom in on the image to hide repeating effect. Non-circular max barrel distortion requires only 200% (2X crop) while Circular max requires 420% to fully hide the edges.
+            </summary>
+        </member>
+        <member name="P:CCSLensDistortion.Filter">
+            <summary>
+            Smooth the resulting image (makes it less pixelated and stretches the edges instead of displaying red). 
+            </summary>
+        </member>
+        <member name="P:CCSLensDistortion.dCircle">
+            <summary>
+            Forces the distortion to be perfectly circular. This more closely simulates non anamorphic lenses but requires more crop.
+            </summary>
+        </member>
+        <member name="P:CCSLensDistortion.dPanini">
+            <summary>
+            Uses the built-in sbox panini perspective mode, which maintains vertical lines in wide images. In this mode barrel and pin sliders become the strength of the effect. Not a lens-effect but interesting. 
+            </summary>
+        </member>
+        <member name="T:CCSLensFlares">
+            <summary>
+            Simple Screen-Space lens flares.
+            </summary>
+        </member>
+        <member name="F:CCSLensFlares.color_map">
+            <summary>
+            Changes the color of the flare across the screen.
+            </summary>
+        </member>
+        <member name="F:CCSLensFlares.opacity_map">
+            <summary>
+            Changes the opacity of the flares across the screen AKA DIRT MAP.
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.bContrast">
+            <summary>
+            Adjusts the threshold of where flares are applied.
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.fCutoff">
+            <summary>
+            Allows you to somewhat reduce the amount of flares produced. (input is not clampled)
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.fStretch">
+            <summary>
+            How far apart each flare is, if you set this high they start to wrap around and produce different effeects.
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.fShape">
+            <summary>
+            Number of flares to render.
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.fGain">
+            <summary>
+            How much to fade the flares with the rest of the scene
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.fColor">
+            <summary>
+            Color to tint the flares.
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.fDoubleAdd">
+            <summary>
+            Boosts the contrast of the Opacity Map. 
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.fPriority">
+            <summary>
+            Ensures the effect is applied AFTER others in the stack.(you must disable and re-enable the component for the change to take place)
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.bFineTune">
+            <summary>
+            curves adjustments for the prepass
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.fBypass">
+            <summary>
+            Disables the flares and shows you the prepass, makes it easier to fine tune the effect. 
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.bRadius">
+            <summary>
+            Adjust the amount of blur on the pre pass (default 10)
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.Blacks">
+            <summary>
+            Darkest parts of the image.
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.Shadows">
+            <summary>
+            Rolloff from midtones to shadow.
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.Midtones">
+            <summary>
+            Parts of the image around 50%.
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.Highlights">
+            <summary>
+            Rolloff from midtones to whites.
+            </summary>
+        </member>
+        <member name="P:CCSLensFlares.Whites">
+            <summary>
+            Brightest parts of the image.
+            </summary>
+        </member>
+        <member name="T:CCSLetterbox">
+            <summary>
+            Crop the screen using black bars like you are watching a DVD on an old tv.
+            </summary>
+        </member>
+        <member name="P:CCSLetterbox.LetterboxColor">
+            <summary>
+            Color of the letterboxing
+            </summary>
+        </member>
+        <member name="P:CCSLetterbox.AspectSelection">
+            <summary>
+            Will automatically letterbox the screen to the selected aspect ratio.
+            </summary>
+        </member>
+        <member name="P:CCSLetterbox.ManualSettings">
+            <summary>
+            Manually set the vertical or horizontal letterboxing amount.
+            </summary>
+        </member>
+        <member name="P:CCSLetterbox.AspectRatio">
+            <summary>
+            Approx AspectRatio, based on current camera screen resolution which is goofy in the editor.
+            </summary>
+        </member>
+        <member name="P:CCSLetterbox.vPercent">
+            <summary>
+            Thickness of the bars going across the screen horizontally 
+            </summary>
+        </member>
+        <member name="P:CCSLetterbox.hPercent">
+            <summary>
+            Thickness of the bars going across the screen vertically 
+            </summary>
+        </member>
+        <member name="T:CCSPerspectiveShift">
+            <summary>
+            Shift the perspective of the image.(very basic)
+            </summary>
+        </member>
+        <member name="P:CCSPerspectiveShift.dUpper">
+            <summary>
+            Scale the upper edge of the image to simulate perspective shift
+            </summary>
+        </member>
+        <member name="P:CCSPerspectiveShift.dLower">
+            <summary>
+             Scales the lower edge, disables upper scale when above 0.
+            </summary>
+        </member>
+        <member name="P:CCSPerspectiveShift.Filter">
+            <summary>
+            Smooth the resulting image.
+            </summary>
+        </member>
+        <member name="T:CCSToneCurve">
+            <summary>
+            Basic 5 point curves adjustment
+            </summary>
+        </member>
+        <member name="P:CCSToneCurve.Blacks">
+            <summary>
+            Darkest parts of the image.
+            </summary>
+        </member>
+        <member name="P:CCSToneCurve.Shadows">
+            <summary>
+            Rolloff from midtones to shadow.
+            </summary>
+        </member>
+        <member name="P:CCSToneCurve.Midtones">
+            <summary>
+            Parts of the image around 50%.
+            </summary>
+        </member>
+        <member name="P:CCSToneCurve.Highlights">
+            <summary>
+            Rolloff from midtones to whites.
+            </summary>
+        </member>
+        <member name="P:CCSToneCurve.Whites">
+            <summary>
+            Brightest parts of the image.
+            </summary>
+        </member>
+        <member name="P:CCSToneCurve.LumaOnly">
+            <summary>
+            Reduces saturation increase, you probably want this on.
+            </summary>
+        </member>
+        <member name="T:CCSVHSD">
+            <summary>
+            Simulation of the vertical scrolling - horizontal "tracking" effect on old VHS tapes.
+            </summary>
+        </member>
+        <member name="P:CCSVHSD.warp_size">
+            <summary>
+            How big are the distortion lines.
+            </summary>
+        </member>
+        <member name="P:CCSVHSD.warp_distort">
+            <summary>
+            Enhance the distorted areas.
+            </summary>
+        </member>
+        <member name="P:CCSVHSD.warp_speed">
+            <summary>
+            How fast the distorted areas scroll.
+            </summary>
+        </member>
+        <member name="P:CCSVHSD.warp_random">
+            <summary>
+            number of smaller lines to chop the main warp lines into.
+            </summary>
+        </member>
+        <member name="P:CCSVHSD.ca">
+            <summary>
+            How fast the distorted areas scroll.
+            </summary>
+        </member>
+        <member name="P:CCSVHSD.Static">
+            <summary>
+            Amount of static that each warp line has
+            </summary>
+        </member>
+        <member name="P:CCSVHSD.dSkew">
+            <summary>
+            high frequency horizontal ripple distortion effect on the entire image.
+            </summary>
+        </member>
+        <member name="T:CCSVideoScope">
+            <summary>
+            Displays the current scene as a RGB+Luma waveform 
+            </summary>
+        </member>
+        <member name="P:CCSVideoScope.fOpacity">
+            <summary>
+            Opacity of the overlay.
+            </summary>
+        </member>
+        <member name="P:CCSVideoScope.xPos">
+            <summary>
+            Horizontal position offset.
+            </summary>
+        </member>
+        <member name="P:CCSVideoScope.yPos">
+            <summary>
+            Vertical Position offset.
+            </summary>
+        </member>
+        <member name="P:CCSVideoScope.xScale">
+            <summary>
+            Horizontal Scale of the overlay.
+            </summary>
+        </member>
+        <member name="P:CCSVideoScope.yScale">
+            <summary>
+            Vertical Scale of the overlay.
+            </summary>
+        </member>
+    </members>
+</doc>

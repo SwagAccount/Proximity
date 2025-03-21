@@ -101,6 +101,81 @@
           "OnComponentStart": null,
           "OnComponentUpdate": null,
           "Scale": 0.2
+        },
+        {
+          "__type": "Sandbox.AmbientOcclusion",
+          "__guid": "9267abaf-a02a-45cf-bf21-cef321ba7236",
+          "__version": 1,
+          "DenoiseMode": "Temporal",
+          "FalloffRange": 0.75,
+          "Intensity": 1,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "Quality": "High",
+          "Radius": 65,
+          "ThinCompensation": 0
+        },
+        {
+          "__type": "CCSColorCorrection",
+          "__guid": "26a48836-1237-4ae7-9090-ef8884c8a82f",
+          "__enabled": false,
+          "fOpacity": 1,
+          "lut_texture": null,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null
+        },
+        {
+          "__type": "Sandbox.PostProcessFromShader",
+          "__guid": "054aa598-1d50-4dad-969e-0259eb2a68c6",
+          "BayerMatrix": {
+            "$compiler": "texture",
+            "$source": "imagefile",
+            "data": {
+              "FilePath": "materials/bayer8.png",
+              "MaxSize": 4096,
+              "ConvertHeightToNormals": false,
+              "NormalScale": 1,
+              "Rotate": 0,
+              "FlipVertical": false,
+              "FlipHorizontal": false,
+              "Padding": {
+                "Size": "0,0",
+                "EdgeSize": "0,0"
+              },
+              "Sharpen": 0,
+              "InvertColor": false,
+              "Blur": 0,
+              "Brightness": 1,
+              "Contrast": 1,
+              "Saturation": 1,
+              "Hue": 0,
+              "Colorize": false,
+              "TargetColor": "0,1,0,1",
+              "CacheToDisk": true
+            },
+            "compiled": null
+          },
+          "ColorDepth": 8,
+          "Dithering": false,
+          "DitherScale": 1,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "Resolution": "320,180",
+          "Shader": "shaders/goback_postprocess.shader",
+          "Tint": false,
+          "TintColor": "1,1,1,1"
         }
       ]
     },
@@ -115,9 +190,9 @@
           "__type": "Sandbox.PlayerController",
           "__guid": "1a2dd1db-e85c-4186-8900-23fdaf37af19",
           "AccelerationTime": 0,
-          "AimStrengthBody": 1,
+          "AimStrengthBody": 0.25,
           "AimStrengthEyes": 1,
-          "AimStrengthHead": 1,
+          "AimStrengthHead": 0.5,
           "AirFriction": 0.1,
           "AltMoveButton": "run",
           "Body": {
@@ -223,8 +298,8 @@
         {
           "__type": "Proximity.PhysicsGrab",
           "__guid": "22228b8f-1d89-4430-b4e1-b8acef1881d9",
-          "GrabAngularDamping": 0,
-          "GrabLinearDamping": 0,
+          "GrabAngularDamping": 50,
+          "GrabLinearDamping": 50,
           "MinMaxDistance": "32 128",
           "OnComponentDestroy": null,
           "OnComponentDisabled": null,
@@ -790,7 +865,7 @@
             "Roll": false
           },
           "MassCenterOverride": "0,0,0",
-          "MassOverride": 0,
+          "MassOverride": 1000,
           "MotionEnabled": true,
           "OnComponentDestroy": null,
           "OnComponentDisabled": null,
@@ -837,6 +912,7 @@
     "facepunch.ceiling_plaster_01#33577",
     "facepunch.concrete_wall_bare_02#47059",
     "facepunch.floor_tile_marble#85415",
+    "facepunch.goback_postprocess#67627",
     "facepunch.microwave#83558"
   ],
   "__version": 2

@@ -48,12 +48,13 @@ public class PhysicsGrab : Component
 		if ( !HeldBody.IsValid() ) return;
 		
 		GrabBody.Position = Tr.StartPosition + Tr.Direction * (HeldBody.IsValid() ? GrabDistance : MinMaxDistance.Max);
+		HeldBody.Sleeping = false;
 	}
 	
 	public void Pickup()
 	{
 		if ( !Tr.Hit || Tr.Body is null || Tr.Body.BodyType == PhysicsBodyType.Static ) return;
-
+		
 		HeldBody = Tr.Body;
 		GrabDistance = (Tr.HitPosition - Scene.Camera.WorldPosition).Length;
 
@@ -62,12 +63,12 @@ public class PhysicsGrab : Component
 		GrabJoint?.Remove();
 		GrabJoint = PhysicsJoint.CreateFixed( new PhysicsPoint( GrabBody ), new PhysicsPoint( HeldBody ) );
 		GrabJoint.Point1 = new PhysicsPoint( GrabBody );
-		GrabJoint.Point2 = new PhysicsPoint( HeldBody, localOffset );
+		GrabJoint.Point2 = new PhysicsPoint( HeldBody, localOffset, HeldBody.Rotation.Inverse );
 		
 		var maxForce = 20 * Tr.Body.Mass * Scene.PhysicsWorld.Gravity.Length;
-		GrabJoint.SpringLinear = new PhysicsSpring( 15, 1, maxForce );
+		GrabJoint.SpringLinear = new PhysicsSpring( 5, 1 / HeldBody.Mass, maxForce );
 
-		InitialRotation = HeldBody.Rotation;
+		//InitialRotation = GrabBody.Rotation;
 		InitialAngularDamping = HeldBody.AngularDamping; //Keep track of angular damping value before pickup
 		InitialLinearDamping = HeldBody.LinearDamping;
 		HeldBody.AngularDamping = GrabAngularDamping;
