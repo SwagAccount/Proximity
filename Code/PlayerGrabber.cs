@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using Sandbox.Network;
 using Sandbox.Physics;
+using Sandbox.Rendering;
 using SpringJoint = Sandbox.SpringJoint;
 
 namespace Proximity;
@@ -13,13 +14,16 @@ public class PhysicsGrab : Component
 	[Property] float GrabAngularDamping { get; set; } = 50;
 	
 	[RequireComponent] public PlayerController player { get; set; }
+	
 	public SceneTraceResult Tr { get; set; }
 	public Sandbox.Physics.FixedJoint GrabJoint { get; set; }
 	public PhysicsBody HeldBody { get; set; }
 	public PhysicsBody GrabBody { get; set; }
+	
 	public Rotation InitialRotation { get; set; }
 	public float InitialLinearDamping { get; set; }
 	public float InitialAngularDamping { get; set; }
+	
 	public float GrabDistance { get; set; }
 	public bool CanGrab { get; set; } = true;
 	
@@ -50,6 +54,17 @@ public class PhysicsGrab : Component
 		if ( IsProxy ) return;
 
 		if ( !HeldBody.IsValid() ) return;
+		
+		if ( player.GroundObject != null )
+		{
+			if ( player.GroundObject.Tags.Has( "held" ) )
+			{
+				if ( player.GroundObject?.Network.Owner == Network.Owner ) Drop();
+				player.PreventGrounding( .1f );
+				PreventGrabbing( 1 );
+				return;
+			}
+		}
 		
 		GrabBody.Position = Tr.StartPosition + Tr.Direction * (HeldBody.IsValid() ? GrabDistance : MinMaxDistance.Max);
 		GrabBody.Position += player.Velocity / 20;
@@ -101,23 +116,33 @@ public class PhysicsGrab : Component
 		HeldBody = null;
 	}
 	
+	public async void PreventGrabbing( float Seconds )
+	{
+		try
+		{
+			CanGrab = false;
+			await Task.DelayRealtimeSeconds( Seconds );
+			CanGrab = true;
+		}
+		catch (Exception e)
+		{
+			Log.Warning( "Couldn't prevent grabbing: " + e );
+		}
+	}
+	
 	protected override void OnPreRender()
 	{
 		if ( IsProxy ) return;
 		
 		base.OnPreRender();
+
+		var hud = Scene.Camera.Hud;
+		var center = new Vector2( Screen.Width / 2, Screen.Height / 2 );
 		
 		if ( Tr.Hit && HeldBody is null && Tr.Body.BodyType != PhysicsBodyType.Static )
 		{
-			Gizmo.Draw.Color = Color.Cyan;
-			Gizmo.Draw.SolidSphere( Tr.HitPosition, 1 );
+			hud.DrawLine( center + Vector2.Right * 5, center + Vector2.Left * 5, 2, Color.Yellow );
+			hud.DrawLine( center + Vector2.Up * 5, center + Vector2.Down * 5, 2, Color.Yellow );
 		}
-	}
-
-	public async Task PreventGrabbing( float Seconds )
-	{
-		CanGrab = false;
-		await Task.DelayRealtimeSeconds( Seconds );
-		CanGrab = true;
 	}
 }

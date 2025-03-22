@@ -1,0 +1,43 @@
+ProximityHUD
+{
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	justify-content: center;
+	align-items: center;
+	font-weight: bold;
+
+	.dot
+	{
+		position: absolute;
+		left: 50%;
+		bottom: 50%;
+		background-color: yellow;
+		border-radius: 50%;
+		min-width: 8px;
+		min-height: 8px;
+	}
+	
+	.hollow-dot
+	{
+		position: absolute;
+		left: 50%;
+		bottom: 50%;
+		border-color: yellow;
+		border-radius: 50%;
+		min-width: 15px;
+		min-height: 15px;
+	}
+	
+	.carrot
+	{
+		font-size: 20px;
+		position: absolute;
+		left: 50%;
+		bottom: 50%;
+		transform: translateX(-5);
+		color: yellow;
+	}
+}
