@@ -163,7 +163,7 @@
               "TargetColor": "0,1,0,1",
               "CacheToDisk": true
             },
-            "compiled": null
+            "compiled": "textures/generated/imagefile/a847d82ba1b0a038.vtex"
           },
           "ColorDepth": 8,
           "Dithering": false,
@@ -186,7 +186,6 @@
       "Flags": 0,
       "Name": "Player",
       "Rotation": "0,0,0.7071067,0.7071068",
-      "Enabled": true,
       "Components": [
         {
           "__type": "Sandbox.PlayerController",
@@ -1481,7 +1480,7 @@
             {
               "__type": "Sandbox.AmbientLight",
               "__guid": "254a7902-5c50-4514-b676-296f2a23baa1",
-              "Color": "0.00392,0.00392,0.00392,1",
+              "Color": "0,0,0,1",
               "OnComponentDestroy": null,
               "OnComponentDisabled": null,
               "OnComponentEnabled": null,
@@ -1633,6 +1632,9 @@
       "Name": "microwave",
       "Position": "59.528,-59.72827,0.003236293",
       "Enabled": true,
+      "NetworkMode": 1,
+      "NetworkOrphaned": 3,
+      "OwnerTransfer": 0,
       "Components": [
         {
           "__type": "Sandbox.ModelRenderer",
@@ -1712,6 +1714,9 @@
       "Name": "washing_machine",
       "Position": "-63.99999,-128,0.02327728",
       "Enabled": true,
+      "NetworkMode": 1,
+      "NetworkOrphaned": 3,
+      "OwnerTransfer": 0,
       "Components": [
         {
           "__type": "Sandbox.ModelRenderer",
@@ -1791,6 +1796,9 @@
       "Name": "fridge",
       "Position": "-63.99999,0,0.1218033",
       "Enabled": true,
+      "NetworkMode": 1,
+      "NetworkOrphaned": 3,
+      "OwnerTransfer": 0,
       "Components": [
         {
           "__type": "Sandbox.ModelRenderer",
@@ -1861,6 +1869,35 @@
           "OverrideMassCenter": false,
           "RigidbodyFlags": 0,
           "StartAsleep": false
+        }
+      ]
+    },
+    {
+      "__guid": "3bd8c84b-df6f-40d2-8504-86c8709057d6",
+      "Flags": 0,
+      "Name": "Network Helper",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.NetworkHelper",
+          "__guid": "dff25f3c-d9c5-43ae-b864-a853c89c981a",
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "PlayerPrefab": {
+            "_type": "gameobject",
+            "go": "8a5f8119-cb9d-4aa7-8d6d-ed6f18b1a1ef"
+          },
+          "SpawnPoints": [
+            {
+              "_type": "gameobject",
+              "go": "3bd8c84b-df6f-40d2-8504-86c8709057d6"
+            }
+          ],
+          "StartServer": true
         }
       ]
     }

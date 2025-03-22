@@ -1,5 +1,6 @@
 using Sandbox;
 using System;
+using System.Threading.Tasks;
 using Sandbox.Network;
 using Sandbox.Physics;
 using SpringJoint = Sandbox.SpringJoint;
@@ -11,24 +12,27 @@ public class PhysicsGrab : Component
 	[Property] float GrabLinearDamping { get; set; } = 25;
 	[Property] float GrabAngularDamping { get; set; } = 50;
 	
+	[RequireComponent] public PlayerController player { get; set; }
 	public SceneTraceResult Tr { get; set; }
-	Sandbox.Physics.FixedJoint GrabJoint { get; set; }
-	PhysicsBody HeldBody { get; set; }
-	PhysicsBody GrabBody { get; set; }
-	Rotation InitialRotation { get; set; }
-	float InitialLinearDamping { get; set; }
-	float InitialAngularDamping { get; set; }
-	float GrabDistance { get; set; }
+	public Sandbox.Physics.FixedJoint GrabJoint { get; set; }
+	public PhysicsBody HeldBody { get; set; }
+	public PhysicsBody GrabBody { get; set; }
+	public Rotation InitialRotation { get; set; }
+	public float InitialLinearDamping { get; set; }
+	public float InitialAngularDamping { get; set; }
+	public float GrabDistance { get; set; }
+	public bool CanGrab { get; set; } = true;
 	
 	protected override void OnStart()
 	{
+		if ( IsProxy ) return;
+		
 		GrabBody = new PhysicsBody( Scene.PhysicsWorld );
 	}
 	
 	protected override void OnUpdate()
 	{
-		if ( IsProxy )
-			return;
+		if ( IsProxy ) return;
 
 		GrabDistance += Input.MouseWheel.y * 5;
 		GrabDistance = GrabDistance.Clamp( MinMaxDistance.Min, MinMaxDistance.Max );
@@ -43,22 +47,29 @@ public class PhysicsGrab : Component
 
 	protected override void OnFixedUpdate()
 	{
-		if ( IsProxy )
-			return;
+		if ( IsProxy ) return;
 
 		if ( !HeldBody.IsValid() ) return;
 		
 		GrabBody.Position = Tr.StartPosition + Tr.Direction * (HeldBody.IsValid() ? GrabDistance : MinMaxDistance.Max);
-		//HeldBody.SmoothRotate( Rotation.From( 0, Scene.Camera.WorldRotation.Yaw(), 0 ), 1f, Time.Delta );
-		HeldBody.Sleeping = false;
+		GrabBody.Position += player.Velocity / 20;
+		HeldBody.SmoothRotate( player.EyeAngles.ToRotation() * InitialRotation, (HeldBody.Mass / 10000).Clamp( 0.1f, 100 ), Time.Delta );
 	}
 	
 	public void Pickup()
 	{
-		if ( !Tr.Hit || Tr.Body is null || Tr.Body.BodyType == PhysicsBodyType.Static ) return;
+		if ( !Tr.Hit || Tr.Body is null || Tr.Body.BodyType == PhysicsBodyType.Static || !CanGrab ) return;
 		
 		HeldBody = Tr.Body;
+		HeldBody.AutoSleep = false;
 		GrabDistance = (Tr.HitPosition - Scene.Camera.WorldPosition).Length;
+		HeldBody.GetGameObject().Tags.Add( "held" );
+
+		PlayerController comp;
+		if ( !HeldBody.GetGameObject().Components.TryGet( out comp ) && HeldBody.GetGameObject().Tags.Has( "held" ) )
+		{
+			HeldBody.GetGameObject().Network.TakeOwnership();
+		}
 
 		var localOffset = HeldBody.Transform.PointToLocal( Tr.HitPosition );
 		
@@ -70,8 +81,8 @@ public class PhysicsGrab : Component
 		var maxForce = 5 * Tr.Body.Mass * Scene.PhysicsWorld.Gravity.Length;
 		GrabJoint.SpringLinear = new PhysicsSpring( 15, HeldBody.Mass / 250, maxForce );
 		GrabJoint.SpringAngular = new PhysicsSpring( 0, 0, 0 );
-
-		InitialRotation = HeldBody.Rotation;
+		
+		InitialRotation = player.EyeAngles.ToRotation().Inverse * HeldBody.Rotation;
 		InitialAngularDamping = HeldBody.AngularDamping; //Keep track of angular damping value before pickup
 		InitialLinearDamping = HeldBody.LinearDamping;
 		HeldBody.AngularDamping = GrabAngularDamping;
@@ -80,6 +91,8 @@ public class PhysicsGrab : Component
 
 	public void Drop()
 	{
+		HeldBody.GetGameObject().Tags.Remove( "held" );
+		HeldBody.AutoSleep = true;
 		HeldBody.AngularDamping = InitialAngularDamping; //Reset angular damping
 		HeldBody.LinearDamping = InitialLinearDamping;
 		
@@ -90,6 +103,8 @@ public class PhysicsGrab : Component
 	
 	protected override void OnPreRender()
 	{
+		if ( IsProxy ) return;
+		
 		base.OnPreRender();
 		
 		if ( Tr.Hit && HeldBody is null && Tr.Body.BodyType != PhysicsBodyType.Static )
@@ -97,5 +112,12 @@ public class PhysicsGrab : Component
 			Gizmo.Draw.Color = Color.Cyan;
 			Gizmo.Draw.SolidSphere( Tr.HitPosition, 1 );
 		}
+	}
+
+	public async Task PreventGrabbing( float Seconds )
+	{
+		CanGrab = false;
+		await Task.DelayRealtimeSeconds( Seconds );
+		CanGrab = true;
 	}
 }
