@@ -14,6 +14,7 @@ public class PhysicsGrab : Component
 	[Property] float GrabAngularDamping { get; set; } = 50;
 	
 	[RequireComponent] public PlayerController player { get; set; }
+	[RequireComponent] public LineRenderer line { get; set; }
 	
 	public SceneTraceResult Tr { get; set; }
 	public Sandbox.Physics.FixedJoint GrabJoint { get; set; }
@@ -38,7 +39,7 @@ public class PhysicsGrab : Component
 	{
 		if ( IsProxy ) return;
 
-		GrabDistance += Input.MouseWheel.y * 5;
+		GrabDistance += Input.MouseWheel.y * MinMaxDistance.Max / 10;
 		GrabDistance = GrabDistance.Clamp( MinMaxDistance.Min, MinMaxDistance.Max );
 		
 		Tr = Scene.Trace.Ray( Scene.Camera.ScreenNormalToRay( 0.5f ), HeldBody.IsValid() ? GrabDistance : MinMaxDistance.Max )
@@ -47,6 +48,14 @@ public class PhysicsGrab : Component
 		
 		if ( Input.Down( "attack1" ) && !HeldBody.IsValid() ) Pickup();
 		if ( !Input.Down( "attack1" ) && HeldBody.IsValid() ) Drop();
+
+		if ( HeldBody.IsValid() && line.Enabled )
+		{
+			line.VectorPoints[0] = Scene.Camera.WorldPosition + Vector3.Down * 35 + Scene.Camera.WorldRotation.Right * 20;
+			var pos2 = GrabBody.Position + Vector3.Direction( line.VectorPoints[2], line.VectorPoints[0] ) * 15;
+			line.VectorPoints[1] = line.VectorPoints[1].LerpTo( pos2, 0.2f );
+			line.VectorPoints[2] = line.VectorPoints[2].LerpTo( GrabJoint.Point2.Transform.Position, 0.2f );
+		}
 	}
 
 	protected override void OnFixedUpdate()
@@ -97,15 +106,21 @@ public class PhysicsGrab : Component
 		GrabJoint.SpringLinear = new PhysicsSpring( 15, HeldBody.Mass / 250, maxForce );
 		GrabJoint.SpringAngular = new PhysicsSpring( 0, 0, 0 );
 		
+		line.VectorPoints[0] = Scene.Camera.WorldPosition + Vector3.Down * 35 + Scene.Camera.WorldRotation.Right * 20;
+		line.VectorPoints[1] = GrabBody.Position + Vector3.Direction( line.VectorPoints[2], line.VectorPoints[0] ) * 15;
+		line.VectorPoints[2] = GrabJoint.Point2.Transform.Position;
+		line.RenderOptions.Game = true;
 		InitialRotation = player.EyeAngles.ToRotation().Inverse * HeldBody.Rotation;
 		InitialAngularDamping = HeldBody.AngularDamping; //Keep track of angular damping value before pickup
 		InitialLinearDamping = HeldBody.LinearDamping;
+		
 		HeldBody.AngularDamping = GrabAngularDamping;
 		HeldBody.LinearDamping = GrabLinearDamping;
 	}
 
 	public void Drop()
 	{
+		line.RenderOptions.Game = false;
 		HeldBody.GetGameObject().Tags.Remove( "held" );
 		HeldBody.AutoSleep = true;
 		HeldBody.AngularDamping = InitialAngularDamping; //Reset angular damping
@@ -141,8 +156,7 @@ public class PhysicsGrab : Component
 		
 		if ( Tr.Hit && HeldBody is null && Tr.Body.BodyType != PhysicsBodyType.Static )
 		{
-			hud.DrawLine( center + Vector2.Right * 5, center + Vector2.Left * 5, 2, Color.Yellow );
-			hud.DrawLine( center + Vector2.Up * 5, center + Vector2.Down * 5, 2, Color.Yellow );
+			hud.DrawCircle( center, 2, Color.Yellow );
 		}
 	}
 }

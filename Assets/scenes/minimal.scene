@@ -77,9 +77,8 @@
         {
           "__type": "Sandbox.Tonemapping",
           "__guid": "9d76f362-7227-40eb-a189-69353c780c46",
-          "__version": 2,
+          "__version": 3,
           "AutoExposureEnabled": true,
-          "ExposureBias": 2,
           "ExposureCompensation": 2,
           "ExposureMethod": "RGB",
           "MaximumExposure": 2,
@@ -178,22 +177,6 @@
           "Shader": "shaders/goback_postprocess.shader",
           "Tint": false,
           "TintColor": "1,1,1,1"
-        },
-        {
-          "__type": "CCSLensDistortion",
-          "__guid": "288285e4-6014-43bc-83fe-4b11916b206c",
-          "CropIn": 100,
-          "dBarrel": 0,
-          "dCircle": true,
-          "dPanini": false,
-          "dPin": 0.023224045,
-          "Filter": false,
-          "OnComponentDestroy": null,
-          "OnComponentDisabled": null,
-          "OnComponentEnabled": null,
-          "OnComponentFixedUpdate": null,
-          "OnComponentStart": null,
-          "OnComponentUpdate": null
         },
         {
           "__type": "Sandbox.ProximityHUD",
@@ -344,7 +327,7 @@
           "__guid": "22228b8f-1d89-4430-b4e1-b8acef1881d9",
           "GrabAngularDamping": 50,
           "GrabLinearDamping": 5,
-          "MinMaxDistance": "32 128",
+          "MinMaxDistance": "48 128",
           "OnComponentDestroy": null,
           "OnComponentDisabled": null,
           "OnComponentEnabled": null,
@@ -388,6 +371,101 @@
           "OnComponentFixedUpdate": null,
           "OnComponentStart": null,
           "OnComponentUpdate": null
+        },
+        {
+          "__type": "Sandbox.LineRenderer",
+          "__guid": "1f44e409-067e-41fc-b314-cd198efc4e05",
+          "Additive": false,
+          "CastShadows": false,
+          "Color": {
+            "blend": "Linear",
+            "color": [
+              {
+                "t": 0,
+                "c": "1,0.69674,0.24186,1"
+              },
+              {
+                "t": 0,
+                "c": "1,0.69674,0.24186,1"
+              },
+              {
+                "t": 0,
+                "c": "1,0.69674,0.24186,1"
+              },
+              {
+                "t": 1,
+                "c": "1,0.98974,0.67632,1"
+              }
+            ],
+            "alpha": [
+              {
+                "t": 0,
+                "a": 1
+              },
+              {
+                "t": 1,
+                "a": 0.75
+              }
+            ]
+          },
+          "DepthFeather": 0,
+          "EndCap": "None",
+          "Face": "Camera",
+          "FogStrength": 1,
+          "Lighting": false,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "Opaque": false,
+          "Points": [
+            null,
+            null
+          ],
+          "RenderOptions": {
+            "GameLayer": false,
+            "OverlayLayer": false,
+            "BloomLayer": false,
+            "AfterUILayer": false
+          },
+          "SplineBias": 0,
+          "SplineContinuity": 0,
+          "SplineInterpolation": 30,
+          "SplineTension": 0,
+          "StartCap": "None",
+          "Texturing": {
+            "Texture": null,
+            "WorldSpace": true,
+            "UnitsPerTexture": 10,
+            "Scale": 1,
+            "Offset": 0,
+            "Scroll": 0
+          },
+          "UseVectorPoints": true,
+          "VectorPoints": [
+            "0,0,0",
+            "0,0,0",
+            "0,0,0"
+          ],
+          "Width": [
+            {
+              "x": 0,
+              "y": 0.5,
+              "in": 0.91803277,
+              "out": -0.91803277,
+              "mode": "Mirrored"
+            },
+            {
+              "x": 1,
+              "y": 0.24095747,
+              "in": 0,
+              "out": 0,
+              "mode": "Flat"
+            }
+          ],
+          "Wireframe": false
         },
         {
           "__type": "Footsteps",
