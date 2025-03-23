@@ -16,6 +16,11 @@ public class PhysicsGrab : Component
 	[RequireComponent] public PlayerController player { get; set; }
 	[RequireComponent] public LineRenderer line { get; set; }
 	
+	[Sync, Change] NetList<Vector3> LinePointsSync { get; set; } = [Vector3.Zero, Vector3.Zero, Vector3.Zero];
+	[Sync] bool LineEnabled { get; set; } = false;
+	[Sync] Vector3 GrabPosSync { get; set; }
+	[Sync] Rotation GrabRotSync { get; set; }
+	
 	public SceneTraceResult Tr { get; set; }
 	public Sandbox.Physics.FixedJoint GrabJoint { get; set; }
 	public PhysicsBody HeldBody { get; set; }
@@ -30,14 +35,14 @@ public class PhysicsGrab : Component
 	
 	protected override void OnStart()
 	{
-		if ( IsProxy ) return;
-		
 		GrabBody = new PhysicsBody( Scene.PhysicsWorld );
 	}
 	
 	protected override void OnUpdate()
 	{
-		if ( IsProxy ) return;
+		line.VectorPoints[0] = LinePointsSync[0];
+		line.VectorPoints[1] = LinePointsSync[1];
+		line.VectorPoints[2] = LinePointsSync[2];
 
 		GrabDistance += Input.MouseWheel.y * MinMaxDistance.Max / 10;
 		GrabDistance = GrabDistance.Clamp( MinMaxDistance.Min, MinMaxDistance.Max );
@@ -45,21 +50,27 @@ public class PhysicsGrab : Component
 		Tr = Scene.Trace.Ray( Scene.Camera.ScreenNormalToRay( 0.5f ), HeldBody.IsValid() ? GrabDistance : MinMaxDistance.Max )
 			.IgnoreGameObjectHierarchy( GameObject.Root )
 			.Run();
-		
+
 		if ( Input.Down( "attack1" ) && !HeldBody.IsValid() ) Pickup();
 		if ( !Input.Down( "attack1" ) && HeldBody.IsValid() ) Drop();
 
+		if ( IsProxy ) return;
+		
 		if ( HeldBody.IsValid() && line.Enabled )
 		{
-			line.VectorPoints[0] = Scene.Camera.WorldPosition + Vector3.Down * 35 + Scene.Camera.WorldRotation.Right * 20;
-			var pos2 = GrabBody.Position + Vector3.Direction( line.VectorPoints[2], line.VectorPoints[0] ) * 15;
-			line.VectorPoints[1] = line.VectorPoints[1].LerpTo( pos2, 0.2f );
-			line.VectorPoints[2] = line.VectorPoints[2].LerpTo( GrabJoint.Point2.Transform.Position, 0.2f );
+			LinePointsSync[0] = Scene.Camera.WorldPosition + Vector3.Down * 35 + Scene.Camera.WorldRotation.Right * 20;
+			var pos2 = GrabBody.Position + Vector3.Direction( LinePointsSync[2], LinePointsSync[0] ) * 15;
+			LinePointsSync[1] = LinePointsSync[1].LerpTo( pos2, 0.2f );
+			LinePointsSync[2] = LinePointsSync[2].LerpTo( GrabJoint.Point2.Transform.Position, 0.2f );
 		}
 	}
 
 	protected override void OnFixedUpdate()
 	{
+		line.Enabled = LineEnabled;
+		GrabBody.Position = GrabPosSync;
+		GrabBody.Rotation = GrabRotSync;
+		
 		if ( IsProxy ) return;
 
 		if ( !HeldBody.IsValid() ) return;
@@ -68,48 +79,49 @@ public class PhysicsGrab : Component
 		{
 			if ( player.GroundObject.Tags.Has( "held" ) )
 			{
-				if ( player.GroundObject?.Network.Owner == Network.Owner ) Drop();
+				if ( player.GroundObject.Network.IsOwner ) Drop();
 				player.PreventGrounding( .1f );
 				PreventGrabbing( 1 );
 				return;
 			}
 		}
 		
-		GrabBody.Position = Tr.StartPosition + Tr.Direction * (HeldBody.IsValid() ? GrabDistance : MinMaxDistance.Max);
-		GrabBody.Position += player.Velocity / 20;
-		HeldBody.SmoothRotate( player.EyeAngles.ToRotation() * InitialRotation, (HeldBody.Mass / 10000).Clamp( 0.1f, 100 ), Time.Delta );
+		GrabPosSync = Tr.StartPosition + Tr.Direction * (HeldBody.IsValid() ? GrabDistance : MinMaxDistance.Max);
+		GrabRotSync = player.EyeAngles.ToRotation() * InitialRotation;
 	}
 	
 	public void Pickup()
 	{
 		if ( !Tr.Hit || Tr.Body is null || Tr.Body.BodyType == PhysicsBodyType.Static || !CanGrab ) return;
 		
+		GrabJoint?.Remove();
+		GrabJoint = null;
 		HeldBody = Tr.Body;
-		HeldBody.AutoSleep = false;
-		GrabDistance = (Tr.HitPosition - Scene.Camera.WorldPosition).Length;
-		HeldBody.GetGameObject().Tags.Add( "held" );
-
+		
 		PlayerController comp;
-		if ( !HeldBody.GetGameObject().Components.TryGet( out comp ) && HeldBody.GetGameObject().Tags.Has( "held" ) )
+		if ( !HeldBody.GetGameObject().Components.TryGet( out comp ) && !HeldBody.GetGameObject().Tags.Has( "held" ) )
 		{
 			HeldBody.GetGameObject().Network.TakeOwnership();
+			HeldBody.GetGameObject().Tags.Add( "held" );
 		}
+		
+		HeldBody.AutoSleep = false;
+		GrabDistance = (Tr.HitPosition - Scene.Camera.WorldPosition).Length;
 
 		var localOffset = HeldBody.Transform.PointToLocal( Tr.HitPosition );
 		
-		GrabJoint?.Remove();
 		GrabJoint = PhysicsJoint.CreateFixed( new PhysicsPoint( GrabBody ), new PhysicsPoint( HeldBody ) );
 		GrabJoint.Point1 = new PhysicsPoint( GrabBody );
 		GrabJoint.Point2 = new PhysicsPoint( HeldBody, localOffset );
 		
 		var maxForce = 5 * Tr.Body.Mass * Scene.PhysicsWorld.Gravity.Length;
 		GrabJoint.SpringLinear = new PhysicsSpring( 15, HeldBody.Mass / 250, maxForce );
-		GrabJoint.SpringAngular = new PhysicsSpring( 0, 0, 0 );
+		GrabJoint.SpringAngular = new PhysicsSpring( 15, HeldBody.Mass / 250, maxForce * 1000 );
 		
 		line.VectorPoints[0] = Scene.Camera.WorldPosition + Vector3.Down * 35 + Scene.Camera.WorldRotation.Right * 20;
 		line.VectorPoints[1] = GrabBody.Position + Vector3.Direction( line.VectorPoints[2], line.VectorPoints[0] ) * 15;
 		line.VectorPoints[2] = GrabJoint.Point2.Transform.Position;
-		line.RenderOptions.Game = true;
+		LineEnabled = true;
 		InitialRotation = player.EyeAngles.ToRotation().Inverse * HeldBody.Rotation;
 		InitialAngularDamping = HeldBody.AngularDamping; //Keep track of angular damping value before pickup
 		InitialLinearDamping = HeldBody.LinearDamping;
@@ -120,7 +132,7 @@ public class PhysicsGrab : Component
 
 	public void Drop()
 	{
-		line.RenderOptions.Game = false;
+		LineEnabled = false;
 		HeldBody.GetGameObject().Tags.Remove( "held" );
 		HeldBody.AutoSleep = true;
 		HeldBody.AngularDamping = InitialAngularDamping; //Reset angular damping
@@ -144,7 +156,7 @@ public class PhysicsGrab : Component
 			Log.Warning( "Couldn't prevent grabbing: " + e );
 		}
 	}
-	
+
 	protected override void OnPreRender()
 	{
 		if ( IsProxy ) return;

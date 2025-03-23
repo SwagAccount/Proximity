@@ -212,6 +212,7 @@
       "Flags": 0,
       "Name": "Player",
       "Rotation": "0,0,0.7071067,0.7071068",
+      "NetworkMode": 1,
       "Components": [
         {
           "__type": "Sandbox.PlayerController",
@@ -425,7 +426,7 @@
             null
           ],
           "RenderOptions": {
-            "GameLayer": false,
+            "GameLayer": true,
             "OverlayLayer": false,
             "BloomLayer": false,
             "AfterUILayer": false

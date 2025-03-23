@@ -7,11 +7,7 @@ public sealed class ProximityPlayer : Component
 	[RequireComponent] PhysicsGrab grab { get; set; }
 	protected override void OnStart()
 	{
-		player.Renderer.RenderType = ModelRenderer.ShadowRenderType.On;
-		
-		if ( IsProxy ) return;
-		
-		player.Renderer.RenderType = ModelRenderer.ShadowRenderType.ShadowsOnly;
+		player.Renderer.RenderType = IsProxy ? ModelRenderer.ShadowRenderType.On : ModelRenderer.ShadowRenderType.ShadowsOnly;
 	}
 	
 	protected override void OnFixedUpdate()
