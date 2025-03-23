@@ -50,11 +50,11 @@ public class PhysicsGrab : Component
 		Tr = Scene.Trace.Ray( Scene.Camera.ScreenNormalToRay( 0.5f ), HeldBody.IsValid() ? GrabDistance : MinMaxDistance.Max )
 			.IgnoreGameObjectHierarchy( GameObject.Root )
 			.Run();
-
+		
+		if ( IsProxy ) return;
+		
 		if ( Input.Down( "attack1" ) && !HeldBody.IsValid() ) Pickup();
 		if ( !Input.Down( "attack1" ) && HeldBody.IsValid() ) Drop();
-
-		if ( IsProxy ) return;
 		
 		if ( HeldBody.IsValid() && line.Enabled )
 		{
@@ -90,6 +90,7 @@ public class PhysicsGrab : Component
 		GrabRotSync = player.EyeAngles.ToRotation() * InitialRotation;
 	}
 	
+	[Rpc.Broadcast]
 	public void Pickup()
 	{
 		if ( !Tr.Hit || Tr.Body is null || Tr.Body.BodyType == PhysicsBodyType.Static || !CanGrab ) return;
@@ -97,26 +98,28 @@ public class PhysicsGrab : Component
 		GrabJoint?.Remove();
 		GrabJoint = null;
 		HeldBody = Tr.Body;
-		
-		PlayerController comp;
-		if ( !HeldBody.GetGameObject().Components.TryGet( out comp ) && !HeldBody.GetGameObject().Tags.Has( "held" ) )
+
+		var obj = HeldBody.GetGameObject();
+		if ( !obj.Components.Get<PlayerController>().IsValid() && 
+		     !obj.Components.Get<NetworkHeldObject>().IsValid() )
 		{
-			HeldBody.GetGameObject().Network.TakeOwnership();
-			HeldBody.GetGameObject().Tags.Add( "held" );
+			Log.Info("take ownership");
+			obj.Network.TakeOwnership();
+			var net = obj.AddComponent<NetworkHeldObject>();
+			net.Owners.TryAdd( Network.Owner, GameObject );
 		}
 		
 		HeldBody.AutoSleep = false;
 		GrabDistance = (Tr.HitPosition - Scene.Camera.WorldPosition).Length;
 
 		var localOffset = HeldBody.Transform.PointToLocal( Tr.HitPosition );
-		
 		GrabJoint = PhysicsJoint.CreateFixed( new PhysicsPoint( GrabBody ), new PhysicsPoint( HeldBody ) );
 		GrabJoint.Point1 = new PhysicsPoint( GrabBody );
 		GrabJoint.Point2 = new PhysicsPoint( HeldBody, localOffset );
 		
-		var maxForce = 5 * Tr.Body.Mass * Scene.PhysicsWorld.Gravity.Length;
+		var maxForce = 5 * Tr.Body.Mass.Clamp( 0, 800 ) * Scene.PhysicsWorld.Gravity.Length;
 		GrabJoint.SpringLinear = new PhysicsSpring( 15, HeldBody.Mass / 250, maxForce );
-		GrabJoint.SpringAngular = new PhysicsSpring( 15, HeldBody.Mass / 250, maxForce * 1000 );
+		GrabJoint.SpringAngular = new PhysicsSpring( 15, HeldBody.Mass / 250, maxForce * 5 );
 		
 		line.VectorPoints[0] = Scene.Camera.WorldPosition + Vector3.Down * 35 + Scene.Camera.WorldRotation.Right * 20;
 		line.VectorPoints[1] = GrabBody.Position + Vector3.Direction( line.VectorPoints[2], line.VectorPoints[0] ) * 15;
@@ -130,10 +133,19 @@ public class PhysicsGrab : Component
 		HeldBody.LinearDamping = GrabLinearDamping;
 	}
 
+	[Rpc.Broadcast]
 	public void Drop()
 	{
+		if ( !HeldBody.IsValid() ) return;
+		
+		var net = HeldBody.GetGameObject().GetComponent<NetworkHeldObject>();
+		if ( net.IsValid() )
+		{
+			net.Owners.Remove( Network.Owner );
+			if ( net.Owners.Count == 0 ) net.Destroy();
+		}
+		
 		LineEnabled = false;
-		HeldBody.GetGameObject().Tags.Remove( "held" );
 		HeldBody.AutoSleep = true;
 		HeldBody.AngularDamping = InitialAngularDamping; //Reset angular damping
 		HeldBody.LinearDamping = InitialLinearDamping;
@@ -159,12 +171,19 @@ public class PhysicsGrab : Component
 
 	protected override void OnPreRender()
 	{
-		if ( IsProxy ) return;
-		
 		base.OnPreRender();
 
 		var hud = Scene.Camera.Hud;
 		var center = new Vector2( Screen.Width / 2, Screen.Height / 2 );
+
+		if ( GrabBody.IsValid() && HeldBody.IsValid() )
+		{
+			Gizmo.Draw.SolidSphere( GrabBody.Position, 2 );
+			Gizmo.Draw.SolidSphere( GrabJoint.Point2.Transform.Position, 2 );
+			Gizmo.Draw.Line( GrabBody.Position, GrabJoint.Point2.Transform.Position );
+		}
+		
+		if ( IsProxy ) return;
 		
 		if ( Tr.Hit && HeldBody is null && Tr.Body.BodyType != PhysicsBodyType.Static )
 		{
