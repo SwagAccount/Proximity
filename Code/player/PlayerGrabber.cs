@@ -173,7 +173,7 @@ public partial class PhysicsGrab : Component
 		var hud = Scene.Camera.Hud;
 		var center = new Vector2( Screen.Width / 2, Screen.Height / 2 );
 
-		if ( GrabBody.IsValid() && HeldObject.IsValid() && GrabDebug )
+		if ( GrabJoint.IsValid() && GrabBody.IsValid() && HeldObject.IsValid() && GrabDebug )
 		{
 			Gizmo.Draw.SolidSphere( GrabBody.Position, 2 );
 			Gizmo.Draw.SolidSphere( GrabJoint.Point2.Transform.Position, 2 );
