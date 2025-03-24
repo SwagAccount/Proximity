@@ -100,8 +100,8 @@ public partial class PhysicsGrab : Component
 		}
 		
 		line.VectorPoints[0] = Scene.Camera.WorldPosition + Vector3.Down * 35 + Scene.Camera.WorldRotation.Right * 20;
-		line.VectorPoints[1] = GrabBody.Position + Vector3.Direction( line.VectorPoints[2], line.VectorPoints[0] ) * 15;
-		line.VectorPoints[2] = GrabJoint.Point2.Transform.Position;
+		line.VectorPoints[1] = GrabPosSync + Vector3.Direction( line.VectorPoints[2], line.VectorPoints[0] ) * 15;
+		line.VectorPoints[2] = HeldObject.WorldTransform.PointToWorld( LocalOffset );
 		LineEnabled = true;
 		
 		if ( GrabDebug && HeldObject.Network.IsOwner )

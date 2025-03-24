@@ -50,32 +50,23 @@ public partial class PhysicsGrab
 	}
 
 	PhysicsBody LastBody = null;
-	Sandbox.Physics.FixedJoint _grabJoint = null;
 
-	public Sandbox.Physics.FixedJoint GrabJoint
-	{
-		get
-		{
-			if ( HeldBody != LastBody && HeldBody != null )
-			{
-				_grabJoint?.Remove();
-				_grabJoint = GetJoint();
-			}
+	public Sandbox.Physics.FixedJoint GrabJoint { get; set; }
 
-			lastGrabbed = HeldObject;
-			return _grabJoint;
-		}
-	}
 	public PhysicsBody GrabBody { get; set; }
 	
 	public void MoveObject()
 	{
 		if ( !HeldObject.IsValid() || HeldObject.IsProxy || !GrabBody.IsValid() ) return;
 
-		if ( IsProxy )
+		if ( HeldBody != LastBody && HeldBody != null )
 		{
-			Log.Info(_grabJoint.IsValid()  );
+			GrabJoint?.Remove();
+			GrabJoint = GetJoint();
 		}
+
+		LastBody = HeldBody;
+
 		GrabBody.Position = GrabPosSync;
 		GrabBody.Rotation = GrabRotSync;
 	}
