@@ -23,7 +23,7 @@ public partial class PhysicsGrab
 
 	public void GetHeldBody()
 	{
-		if ( _heldBody.IsValid() )
+		if ( _heldBody.IsValid() && !_heldBody.GetGameObject().Tags.Contains("held"))
 		{
 			_heldBody.LinearDamping = InitialLinearDamping;
 			_heldBody.AngularDamping = InitialAngularDamping;
@@ -36,13 +36,13 @@ public partial class PhysicsGrab
 		}
 		_heldBody = GetBody( HeldObject );
 				
-		InitialAngularDamping = _heldBody.AngularDamping; //Keep track of angular damping value before pickup
+		InitialAngularDamping = _heldBody.AngularDamping;
 		InitialLinearDamping = _heldBody.LinearDamping;
 				
 		_heldBody.LinearDamping = GrabLinearDamping;
 		_heldBody.AngularDamping = GrabAngularDamping;
 	}
-	
+
 	PhysicsBody GetBody( GameObject gameObject )
 	{
 		Rigidbody rigidbody = gameObject.Components.Get<Rigidbody>();

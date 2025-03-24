@@ -21,8 +21,8 @@ public partial class PhysicsGrab : Component
 	
 	public SceneTraceResult Tr { get; set; }
 	public Rotation InitialRotation { get; set; }
-	public float InitialLinearDamping { get; set; }
-	public float InitialAngularDamping { get; set; }
+	[Property] public float InitialLinearDamping { get; set; }
+	[Property] public float InitialAngularDamping { get; set; }
 	
 	public float GrabDistance { get; set; }
 	public bool CanGrab { get; set; } = true;
@@ -135,18 +135,21 @@ public partial class PhysicsGrab : Component
 	public void Drop()
 	{
 		if ( !HeldObject.IsValid() ) return;
-		
+
+		HeldBody.LinearDamping = InitialLinearDamping;
+		HeldBody.AngularDamping = InitialAngularDamping;
+
 		LineEnabled = false;
 		HeldObject.Components.Get<HighlightOutline>()?.Destroy();
 		if ( !IsProxy && HeldObject.Network.IsOwner ) RemoveHeldTag( HeldObject );
-
-		lastGrabbed = null;
-		LastBody = null;
 
 		HeldBody.AutoSleep = true;
 		
 		GrabJoint?.Remove();
 		HeldObject = null;
+
+		lastGrabbed = null;
+		LastBody = null;
 	}
 	
 	public async void PreventGrabbing( float Seconds )
