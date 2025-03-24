@@ -70,7 +70,13 @@ public partial class PhysicsGrab : Component
 		if ( IsProxy ) return;
 
 		if ( !HeldObject.IsValid() ) return;
-		
+
+		if ( !HeldObject.Tags.Has( "held" ) )
+		{
+			AddHeldTag( HeldObject );
+			HeldObject.Network.TakeOwnership();
+		}
+
 		if ( player.GroundObject != null && player.GroundObject.Network.IsOwner )
 		{
 			if ( player.GroundObject.Network.IsOwner ) Drop();
