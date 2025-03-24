@@ -204,6 +204,16 @@
           "ScaleStrategy": "ConsistentHeight",
           "TargetCamera": null,
           "ZIndex": 100
+        },
+        {
+          "__type": "Sandbox.Highlight",
+          "__guid": "b1b4432c-0cfb-4ca2-85f9-329589c1c8b8",
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null
         }
       ]
     },

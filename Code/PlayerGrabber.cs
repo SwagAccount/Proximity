@@ -15,6 +15,8 @@ public class PhysicsGrab : Component
 	
 	[RequireComponent] public PlayerController player { get; set; }
 	[RequireComponent] public LineRenderer line { get; set; }
+
+	[ConVar( "pr.debug_grab", ConVarFlags.Saved )] public static bool GrabDebug { get; set; } = false;
 	
 	[Sync, Change] NetList<Vector3> LinePointsSync { get; set; } = [Vector3.Zero, Vector3.Zero, Vector3.Zero];
 	[Sync] bool LineEnabled { get; set; } = false;
@@ -32,10 +34,12 @@ public class PhysicsGrab : Component
 	
 	public float GrabDistance { get; set; }
 	public bool CanGrab { get; set; } = true;
+	Color PlayerColor { get; set; }
 	
 	protected override void OnStart()
 	{
 		GrabBody = new PhysicsBody( Scene.PhysicsWorld );
+		PlayerColor = Color.Random.WithAlpha( 1 );
 	}
 	
 	protected override void OnUpdate()
@@ -77,7 +81,7 @@ public class PhysicsGrab : Component
 		
 		if ( player.GroundObject != null )
 		{
-			if ( player.GroundObject.Tags.Has( "held" ) )
+			if ( player.GroundObject.Components.Get<NetworkHeldObject>().IsValid() )
 			{
 				if ( player.GroundObject.Network.IsOwner ) Drop();
 				player.PreventGrounding( .1f );
@@ -100,13 +104,22 @@ public class PhysicsGrab : Component
 		HeldBody = Tr.Body;
 
 		var obj = HeldBody.GetGameObject();
+		NetworkHeldObject net = obj.Components.Get<NetworkHeldObject>();
 		if ( !obj.Components.Get<PlayerController>().IsValid() && 
 		     !obj.Components.Get<NetworkHeldObject>().IsValid() )
 		{
-			Log.Info("take ownership");
 			obj.Network.TakeOwnership();
-			var net = obj.AddComponent<NetworkHeldObject>();
+			net = obj.AddComponent<NetworkHeldObject>();
+		}
+		if ( net.IsValid() )
+		{
 			net.Owners.TryAdd( Network.Owner, GameObject );
+		}
+		
+		if ( GrabDebug && HeldBody.GetGameObject().Network.IsOwner )
+		{
+			HeldBody.GetGameObject().Components.Get<HighlightOutline>()?.Destroy();
+			HeldBody.GetGameObject().Components.Create<HighlightOutline>().Color = PlayerColor;
 		}
 		
 		HeldBody.AutoSleep = false;
@@ -146,6 +159,7 @@ public class PhysicsGrab : Component
 		}
 		
 		LineEnabled = false;
+		HeldBody.GetGameObject().Components.Get<HighlightOutline>()?.Destroy();
 		HeldBody.AutoSleep = true;
 		HeldBody.AngularDamping = InitialAngularDamping; //Reset angular damping
 		HeldBody.LinearDamping = InitialLinearDamping;
@@ -176,7 +190,7 @@ public class PhysicsGrab : Component
 		var hud = Scene.Camera.Hud;
 		var center = new Vector2( Screen.Width / 2, Screen.Height / 2 );
 
-		if ( GrabBody.IsValid() && HeldBody.IsValid() )
+		if ( GrabBody.IsValid() && HeldBody.IsValid() && GrabDebug )
 		{
 			Gizmo.Draw.SolidSphere( GrabBody.Position, 2 );
 			Gizmo.Draw.SolidSphere( GrabJoint.Point2.Transform.Position, 2 );
