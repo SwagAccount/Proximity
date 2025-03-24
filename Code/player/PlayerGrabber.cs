@@ -77,8 +77,8 @@ public partial class PhysicsGrab : Component
 	public void Rotate( Rotation eye, Vector3 input )
 	{
 		var localRot = eye;
-		localRot *= Rotation.FromAxis( Vector3.Up, input.x * RotateSpeed );
-		localRot *= Rotation.FromAxis( Vector3.Backward, input.y * RotateSpeed );
+		localRot *= Rotation.FromAxis( player.EyeAngles.ToRotation().Up, input.x * RotateSpeed );
+		localRot *= Rotation.FromAxis( player.EyeAngles.ToRotation().Right, input.y * RotateSpeed );
 		localRot = eye.Inverse * localRot;
 
 		GrabRotSync = localRot * GrabRotSync;
