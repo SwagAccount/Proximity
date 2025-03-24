@@ -140,9 +140,10 @@ public partial class PhysicsGrab : Component
 		HeldObject.Components.Get<HighlightOutline>()?.Destroy();
 		if ( !IsProxy && HeldObject.Network.IsOwner ) RemoveHeldTag( HeldObject );
 
+		lastGrabbed = null;
+		LastBody = null;
+
 		HeldBody.AutoSleep = true;
-		HeldBody.AngularDamping = InitialAngularDamping; //Reset angular damping
-		HeldBody.LinearDamping = InitialLinearDamping;
 		
 		GrabJoint?.Remove();
 		HeldObject = null;
