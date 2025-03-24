@@ -6,6 +6,7 @@ public partial class PhysicsGrab : Component
 	[Property] RangedFloat MinMaxDistance { get; set; } = new( 64, 128 );
 	[Property] float GrabLinearDamping { get; set; } = 25;
 	[Property] float GrabAngularDamping { get; set; } = 50;
+	[Property, Range(0, 1, 0.05f)] float RotateSpeed { get; set; } 
 	
 	[RequireComponent] public PlayerController player { get; set; }
 	[RequireComponent] public LineRenderer line { get; set; }
@@ -51,6 +52,18 @@ public partial class PhysicsGrab : Component
 		
 		if ( Input.Down( "attack1" ) && !HeldObject.IsValid() ) Pickup();
 		if ( !Input.Down( "attack1" ) && HeldObject.IsValid() ) Drop();
+
+		if ( Input.Down( "attack2" ) )
+		{
+			Rotate( new Angles( 0.0f, player.EyeTransform.Rotation.Yaw(), 0.0f ), Input.MouseDelta * RotateSpeed );
+			player.UseInputControls = false;
+		}
+		else
+		{
+			player.UseInputControls = true;
+			GrabPosSync = Tr.StartPosition + Tr.Direction * (HeldObject.IsValid() ? GrabDistance : MinMaxDistance.Max);
+			GrabRotSync = player.EyeAngles.ToRotation() * InitialRotation;
+		}
 		
 		if ( HeldObject.IsValid() && line.Enabled )
 		{
@@ -59,6 +72,16 @@ public partial class PhysicsGrab : Component
 			LinePointsSync[1] = LinePointsSync[1].LerpTo( pos2, 0.2f );
 			LinePointsSync[2] = LinePointsSync[2].LerpTo( HeldObject.WorldTransform.PointToWorld( LocalOffset ), 0.2f );
 		}
+	}
+	
+	public void Rotate( Rotation eye, Vector3 input )
+	{
+		var localRot = eye;
+		localRot *= Rotation.FromAxis( Vector3.Up, input.x * RotateSpeed );
+		localRot *= Rotation.FromAxis( Vector3.Backward, input.y * RotateSpeed );
+		localRot = eye.Inverse * localRot;
+
+		GrabRotSync = localRot * GrabRotSync;
 	}
 
 	protected override void OnFixedUpdate()
@@ -84,9 +107,6 @@ public partial class PhysicsGrab : Component
 			PreventGrabbing( 1 );
 			return;
 		}
-		
-		GrabPosSync = Tr.StartPosition + Tr.Direction * (HeldObject.IsValid() ? GrabDistance : MinMaxDistance.Max);
-		GrabRotSync = player.EyeAngles.ToRotation() * InitialRotation;
 	}
 	
 	public void Pickup()

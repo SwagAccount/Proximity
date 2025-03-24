@@ -338,13 +338,16 @@
           "__guid": "22228b8f-1d89-4430-b4e1-b8acef1881d9",
           "GrabAngularDamping": 50,
           "GrabLinearDamping": 5,
+          "InitialAngularDamping": 15,
+          "InitialLinearDamping": 15,
           "MinMaxDistance": "48 128",
           "OnComponentDestroy": null,
           "OnComponentDisabled": null,
           "OnComponentEnabled": null,
           "OnComponentFixedUpdate": null,
           "OnComponentStart": null,
-          "OnComponentUpdate": null
+          "OnComponentUpdate": null,
+          "RotateSpeed": 0.3
         },
         {
           "__type": "Sandbox.Rigidbody",
