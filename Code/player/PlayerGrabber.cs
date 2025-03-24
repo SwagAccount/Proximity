@@ -95,7 +95,7 @@ public partial class PhysicsGrab : Component
 
 		if ( !HeldObject.Tags.Has( "held" ) )
 		{
-			BroadcastTags( HeldObject );
+			AddHeldTag( HeldObject );
 			HeldObject.Network.TakeOwnership();
 		}
 		
@@ -112,10 +112,17 @@ public partial class PhysicsGrab : Component
 	}
 
 	[Rpc.Broadcast]
-	public void BroadcastTags( GameObject obj )
+	public void AddHeldTag( GameObject obj )
 	{
 		if ( obj.Tags.Has( "held" ) ) return;
 		obj.Tags.Add( "held" );
+	}
+
+	[Rpc.Broadcast]
+	public void RemoveHeldTag( GameObject obj )
+	{
+		if ( !obj.Tags.Has( "held" ) ) return;
+		obj.Tags.Remove( "held" );
 	}
 
 	[Rpc.Broadcast]
@@ -125,7 +132,7 @@ public partial class PhysicsGrab : Component
 		
 		LineEnabled = false;
 		HeldObject.Components.Get<HighlightOutline>()?.Destroy();
-		if ( !IsProxy && HeldObject.Network.IsOwner ) HeldObject.Tags.Remove( "held" );
+		if ( !IsProxy && HeldObject.Network.IsOwner ) RemoveHeldTag( HeldObject );
 
 		HeldBody.AutoSleep = true;
 		HeldBody.AngularDamping = InitialAngularDamping; //Reset angular damping
