@@ -1,4 +1,6 @@
 using System;
+using System.Numerics;
+using Sandbox.Physics;
 
 namespace Proximity;
 public partial class PhysicsGrab : Component
@@ -15,13 +17,15 @@ public partial class PhysicsGrab : Component
 	
 	[Sync, Change] NetList<Vector3> LinePointsSync { get; set; } = [Vector3.Zero, Vector3.Zero, Vector3.Zero];
 	[Sync] bool LineEnabled { get; set; } = false;
+	[Sync] bool IsRotating { get; set; }
 	[Sync] Vector3 GrabPosSync { get; set; }
-	[Sync] Rotation GrabRotSync { get; set; }
+	[Sync] Rotation GrabRotSync { get; set; } = Rotation.Identity;
 	[Sync] public GameObject HeldObject { get; set; }
 	[Sync] Vector3 LocalOffset { get; set; }
 	
 	public SceneTraceResult Tr { get; set; }
 	public Rotation InitialRotation { get; set; }
+	public Rotation RotationOffset { get; set; }
 	[Property] public float InitialLinearDamping { get; set; }
 	[Property] public float InitialAngularDamping { get; set; }
 	
@@ -49,21 +53,11 @@ public partial class PhysicsGrab : Component
 			.Run();
 		
 		if ( IsProxy ) return;
-		
-		if ( Input.Down( "attack1" ) && !HeldObject.IsValid() ) Pickup();
-		if ( !Input.Down( "attack1" ) && HeldObject.IsValid() ) Drop();
 
-		if ( Input.Down( "attack2" ) )
-		{
-			Rotate( new Angles( 0.0f, player.EyeTransform.Rotation.Yaw(), 0.0f ), Input.MouseDelta * RotateSpeed );
-			player.UseInputControls = false;
-		}
-		else
-		{
-			player.UseInputControls = true;
-			GrabPosSync = Tr.StartPosition + Tr.Direction * (HeldObject.IsValid() ? GrabDistance : MinMaxDistance.Max);
-			GrabRotSync = player.EyeAngles.ToRotation() * InitialRotation;
-		}
+		HandleInput();
+		
+		GrabPosSync = Tr.StartPosition + Tr.Direction * ( HeldObject.IsValid() ? GrabDistance : MinMaxDistance.Max );
+		GrabRotSync = player.EyeAngles.ToRotation() * InitialRotation;
 		
 		if ( HeldObject.IsValid() && line.Enabled )
 		{
@@ -73,15 +67,38 @@ public partial class PhysicsGrab : Component
 			LinePointsSync[2] = LinePointsSync[2].LerpTo( HeldObject.WorldTransform.PointToWorld( LocalOffset ), 0.2f );
 		}
 	}
+
+	public void HandleInput()
+	{
+		if ( Input.Down( "attack1" ) && !HeldObject.IsValid() ) Pickup();
+		if ( !Input.Down( "attack1" ) && HeldObject.IsValid() ) Drop();
+		
+		if ( Input.Pressed( "attack2" ) && HeldObject.IsValid() )
+		{
+			IsRotating = true;
+			player.UseInputControls = false;
+			player.WishVelocity = 0; // hacky bullshit TODO: let the player move while rotating
+		}
+		if ( Input.Released( "attack2" ) )
+		{
+			IsRotating = false;
+			player.UseInputControls = true;
+		}
+		
+		if ( Input.Down( "attack2" ) && HeldObject.IsValid() )
+		{
+			Rotate( new Angles( 0.0f, player.EyeTransform.Rotation.Yaw(), 0.0f ), Input.MouseDelta * RotateSpeed );
+		}
+	}
 	
 	public void Rotate( Rotation eye, Vector3 input )
 	{
 		var localRot = eye;
-		localRot *= Rotation.FromAxis( player.EyeAngles.ToRotation().Up, input.x * RotateSpeed );
-		localRot *= Rotation.FromAxis( player.EyeAngles.ToRotation().Right, input.y * RotateSpeed );
+		localRot *= Rotation.FromAxis( Vector3.Up, input.x * RotateSpeed );
+		localRot *= Rotation.FromAxis( Vector3.Right, input.y * RotateSpeed );
 		localRot = eye.Inverse * localRot;
 
-		GrabRotSync = localRot * GrabRotSync;
+		InitialRotation = localRot * InitialRotation;
 	}
 
 	protected override void OnFixedUpdate()
@@ -100,12 +117,11 @@ public partial class PhysicsGrab : Component
 			HeldObject.Network.TakeOwnership();
 		}
 
-		if ( player.GroundObject != null && player.GroundObject.Network.IsOwner )
+		if ( player.GroundObject != null && player.GroundObject.Tags.Has( "held" ) )
 		{
 			if ( player.GroundObject.Network.IsOwner ) Drop();
 			player.PreventGrounding( .1f );
-			PreventGrabbing( 1 );
-			return;
+			PreventGrabbing( .5f );
 		}
 	}
 	
@@ -118,6 +134,7 @@ public partial class PhysicsGrab : Component
 		GrabDistance = (Tr.HitPosition - Scene.Camera.WorldPosition).Length;
 		LocalOffset = HeldBody.Transform.PointToLocal( Tr.HitPosition );
 		InitialRotation = player.EyeAngles.ToRotation().Inverse * HeldBody.Rotation;
+		RotationOffset = Rotation.FromPitch( 0 );
 
 		if ( !HeldObject.Tags.Has( "held" ) )
 		{
@@ -164,12 +181,11 @@ public partial class PhysicsGrab : Component
 		if ( !IsProxy && HeldObject.Network.IsOwner ) RemoveHeldTag( HeldObject );
 
 		HeldBody.AutoSleep = true;
-		
 		GrabJoint?.Remove();
 		HeldObject = null;
-
 		lastGrabbed = null;
 		LastBody = null;
+		player.UseInputControls = true;
 	}
 	
 	public async void PreventGrabbing( float Seconds )
@@ -198,6 +214,10 @@ public partial class PhysicsGrab : Component
 			Gizmo.Draw.SolidSphere( GrabBody.Position, 2 );
 			Gizmo.Draw.SolidSphere( GrabJoint.Point2.Transform.Position, 2 );
 			Gizmo.Draw.Line( GrabBody.Position, GrabJoint.Point2.Transform.Position );
+			Gizmo.Draw.Color = Color.Blue;
+			Gizmo.Draw.Arrow( GrabPosSync, GrabPosSync + InitialRotation.Forward * 20 );
+			Gizmo.Draw.Color = Color.Yellow;
+			Gizmo.Draw.Arrow( GrabPosSync, GrabPosSync + GrabRotSync.Forward * 20 );
 		}
 		
 		if ( IsProxy ) return;

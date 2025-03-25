@@ -50,14 +50,15 @@ public partial class PhysicsGrab
 	}
 
 	PhysicsBody LastBody = null;
-
+	
 	public Sandbox.Physics.FixedJoint GrabJoint { get; set; }
-
 	public PhysicsBody GrabBody { get; set; }
+	public PhysicsSpring lastSpringAngular { get; set; }
+	public bool LastRotating { get; set; }
 	
 	public void MoveObject()
 	{
-		if ( !HeldObject.IsValid() || HeldObject.IsProxy || !GrabBody.IsValid() ) return;
+		if ( !HeldObject.IsValid() || HeldObject.IsProxy || !GrabBody.IsValid() || !HeldBody.IsValid() ) return;
 
 		if ( HeldBody != LastBody && HeldBody != null )
 		{
@@ -65,6 +66,21 @@ public partial class PhysicsGrab
 			GrabJoint = GetJoint();
 		}
 
+		// started rotating
+		if ( IsRotating && !LastRotating )
+		{
+			lastSpringAngular = GrabJoint.SpringAngular;
+			var maxForce = 100 * HeldBody.Mass * Scene.PhysicsWorld.Gravity.Length;
+			GrabJoint.SpringAngular = new( 15, HeldBody.Mass / 250, maxForce );
+		}
+
+		// stopped rotating
+		if ( !IsRotating && LastRotating )
+		{
+			GrabJoint.SpringAngular = lastSpringAngular;
+		}
+
+		LastRotating = IsRotating;
 		LastBody = HeldBody;
 
 		GrabBody.Position = GrabPosSync;
