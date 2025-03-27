@@ -51,52 +51,61 @@ public partial class PhysicsGrab
 
 	PhysicsBody LastBody = null;
 	
-	public Sandbox.Physics.FixedJoint GrabJoint { get; set; }
-	public PhysicsBody GrabBody { get; set; }
+	public Sandbox.Physics.FixedJoint MoveJoint { get; set; }
+	public Sandbox.Physics.FixedJoint RotateJoint { get; set; }
+	public PhysicsBody MoveBody { get; set; }
+	public PhysicsBody RotateBody { get; set; }
 	public PhysicsSpring lastSpringAngular { get; set; }
 	public bool LastRotating { get; set; }
 	
 	public void MoveObject()
 	{
-		if ( !HeldObject.IsValid() || HeldObject.IsProxy || !GrabBody.IsValid() || !HeldBody.IsValid() ) return;
+		if ( !HeldObject.IsValid() || HeldObject.IsProxy || !MoveBody.IsValid() || !HeldBody.IsValid() ) return;
 
 		if ( HeldBody != LastBody && HeldBody != null )
 		{
-			GrabJoint?.Remove();
-			GrabJoint = GetJoint();
+			MoveJoint?.Remove();
+			RotateJoint?.Remove();
+			MoveJoint = GetJoint(LocalOffset, MoveBody, true, false);
+			RotateJoint = GetJoint(Vector3.Zero, RotateBody, false, true);
+
 		}
 
 		// started rotating
 		if ( IsRotating && !LastRotating )
 		{
-			lastSpringAngular = GrabJoint.SpringAngular;
+			lastSpringAngular = RotateJoint.SpringAngular;
 			var maxForce = 100 * HeldBody.Mass * Scene.PhysicsWorld.Gravity.Length;
-			GrabJoint.SpringAngular = new( 15, HeldBody.Mass / 250, maxForce );
+			RotateJoint.SpringAngular = new( 15, HeldBody.Mass / 250, maxForce * 10);
 		}
 
 		// stopped rotating
 		if ( !IsRotating && LastRotating )
 		{
-			GrabJoint.SpringAngular = lastSpringAngular;
+			RotateJoint.SpringAngular = lastSpringAngular;
 		}
 
 		LastRotating = IsRotating;
 		LastBody = HeldBody;
 
-		GrabBody.Position = GrabPosSync;
-		GrabBody.Rotation = GrabRotSync;
+		MoveBody.Position = GrabPosSync;
+		RotateBody.Position = HeldBody.MassCenter;
+		RotateBody.Rotation = GrabRotSync;
 	}
-	
-	public Sandbox.Physics.FixedJoint GetJoint()
+
+	public Sandbox.Physics.FixedJoint GetJoint( Vector3 offset, PhysicsBody body, bool move = true, bool rotate = true )
 	{
-		var GrabJoint = PhysicsJoint.CreateFixed( new PhysicsPoint( GrabBody ), new PhysicsPoint( HeldBody ) );
-		GrabJoint.Point1 = new PhysicsPoint( GrabBody );
-		GrabJoint.Point2 = new PhysicsPoint( HeldBody, LocalOffset );
+		var grabJoint = PhysicsJoint.CreateFixed( new PhysicsPoint( body ), new PhysicsPoint( HeldBody ) );
+		grabJoint.Point1 = new PhysicsPoint( body );
+		grabJoint.Point2 = new PhysicsPoint( HeldBody, HeldBody.LocalMassCenter );
 		
 		var maxForce = 5 * HeldBody.Mass.Clamp( 0, 800 ) * Scene.PhysicsWorld.Gravity.Length;
-		GrabJoint.SpringLinear = new PhysicsSpring( 15, HeldBody.Mass / 250, maxForce );
-		GrabJoint.SpringAngular = new PhysicsSpring( 15, HeldBody.Mass / 250, maxForce * 5 );
 
-		return GrabJoint;
+		var physSpring = new PhysicsSpring( 15, HeldBody.Mass / 250, maxForce * 5 );
+
+		grabJoint.SpringLinear = move ? physSpring : new( 0, 0, 0 );
+		grabJoint.SpringAngular = rotate ? physSpring : new( 0, 0, 0 );
+
+		return grabJoint;
 	}
 }

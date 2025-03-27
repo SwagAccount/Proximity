@@ -35,7 +35,8 @@ public partial class PhysicsGrab : Component
 	
 	protected override void OnStart()
 	{
-		GrabBody = new PhysicsBody( Scene.PhysicsWorld );
+		MoveBody = new PhysicsBody( Scene.PhysicsWorld );
+		RotateBody = new PhysicsBody( Scene.PhysicsWorld );
 		PlayerColor = Color.Random.WithAlpha( 1 );
 	}
 	
@@ -181,7 +182,8 @@ public partial class PhysicsGrab : Component
 		if ( !IsProxy && HeldObject.Network.IsOwner ) RemoveHeldTag( HeldObject );
 
 		HeldBody.AutoSleep = true;
-		GrabJoint?.Remove();
+		MoveJoint?.Remove();
+		RotateJoint?.Remove();
 		HeldObject = null;
 		lastGrabbed = null;
 		LastBody = null;
@@ -209,11 +211,11 @@ public partial class PhysicsGrab : Component
 		var hud = Scene.Camera.Hud;
 		var center = new Vector2( Screen.Width / 2, Screen.Height / 2 );
 
-		if ( GrabJoint.IsValid() && GrabBody.IsValid() && HeldObject.IsValid() && GrabDebug )
+		if ( MoveJoint.IsValid() && MoveBody.IsValid() && HeldObject.IsValid() && GrabDebug )
 		{
-			Gizmo.Draw.SolidSphere( GrabBody.Position, 2 );
-			Gizmo.Draw.SolidSphere( GrabJoint.Point2.Transform.Position, 2 );
-			Gizmo.Draw.Line( GrabBody.Position, GrabJoint.Point2.Transform.Position );
+			Gizmo.Draw.SolidSphere( MoveBody.Position, 2 );
+			Gizmo.Draw.SolidSphere( MoveJoint.Point2.Transform.Position, 2 );
+			Gizmo.Draw.Line( MoveBody.Position, MoveJoint.Point2.Transform.Position );
 			Gizmo.Draw.Color = Color.Blue;
 			Gizmo.Draw.Arrow( GrabPosSync, GrabPosSync + InitialRotation.Forward * 20 );
 			Gizmo.Draw.Color = Color.Yellow;
